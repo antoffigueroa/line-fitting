@@ -43,9 +43,9 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     mean_left = np.mean(left_part)
     mean = (mean_right+mean_left)/2.0
     spe.data = spe.data/mean
-    if show==True:
+    if show:
         plt.figure()
-        plt.plot(spe.wave.coord(),spe.data)
+        plt.plot(spe.wave.coord(), spe.data)
         plt.plot(w_0+10*wratio, 1, '>')
         plt.plot(w_0+10*wratio+20, 1, '<')
         plt.plot(w_0-10*wratio-20, 1, '>')
@@ -99,7 +99,7 @@ def fit_doublet(spe, w1, w2):
     # print wavelength
     # define priors
     line_prior = np.polyfit(wavelength, flux, 1)
-    print (3*w1-w2)/2.0 , (w1+w2)/2.0
+    print (3*w1-w2)/2.0, (w1+w2)/2.0
     flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1-w2)/2.0, (w1+w2)/2.0)
     A_1 = abs(max(flux_cut1) - min(flux_cut1))
     mu_1 = np.mean(wl_cut1)
