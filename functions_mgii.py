@@ -54,11 +54,13 @@ def normalize(spe, w_0, z, wratio=None, show=False):
         plt.show()
     return spe
 
+sigma=2.7/(2*np.sqrt(2*np.log(2)))
+err_sigma = 0
 
 def gaussian(parameters, x):
     """
     """
-    mu, sigma, A = parameters
+    mu, A = parameters
     g = A * scipy.stats.norm(loc=mu, scale=sigma).pdf(x)
     return g
 
@@ -72,15 +74,15 @@ def line(parameters, x):
 def simple_model(parameters, x):
     """
     """
-    mu, sigma, A, m, n = parameters
-    return line((m, n), x)-gaussian((mu, sigma, A), x)
+    mu, A, m, n = parameters
+    return 1-gaussian((mu, A), x)
 
 
 def double_model(parameters, x):
     """
     """
-    mu1, sigma1, A1, mu2, sigma2, A2 = parameters
-    return 1-gaussian((mu1, sigma1, A1), x)-gaussian((mu2, sigma2, A2), x)
+    mu1, A1, mu2, A2 = parameters
+    return 1-gaussian((mu1, A1), x)-gaussian((mu2, A2), x)
 
 
 def chi_cuadrado(parameters, x, y):
@@ -100,19 +102,17 @@ def fit_doublet(spe, w1, w2):
     flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1-w2)/2.0, (w1+w2)/2.0)
     A_1 = abs(max(flux_cut1) - min(flux_cut1))
     mu_1 = np.mean(wl_cut1)
-    sigma_1 = np.std(wl_cut1)
     flux_cut2, wl_cut2 = cut_spectra(spe, (w1+w2)/2.0, (3*w2-w1)/2.0)
     A_2 = abs(max(flux_cut2) - min(flux_cut2))
     mu_2 = np.mean(wl_cut2)
-    sigma_2 = np.std(wl_cut2)
     # print line_prior[0]
-    parameters = mu_1, sigma_1, A_1, mu_2, sigma_2, A_2
+    parameters = mu_1, A_1, mu_2, A_2
     # make fits
     v, covar, info, mesg, success = leastsq(chi_cuadrado, parameters, args=(wavelength, flux), full_output=1,  maxfev=100000)
-    mu_1_fit, sigma_1_fit, A_1_fit, mu_2_fit, sigma_2_fit, A_2_fit = v[0], v[1], v[2], v[3], v[4], v[5]
+    mu_1_fit, A_1_fit, mu_2_fit, A_2_fit = v[0], v[1], v[2], v[3]
     # calculate fluxes
-    flux_1_fit = A_1_fit*sigma_1_fit
-    flux_2_fit = A_2_fit*sigma_2_fit
+    flux_1_fit = A_1_fit*sigma
+    flux_2_fit = A_2_fit*sigma
     # calculate errors
     chisq = sum(info["fvec"] * info["fvec"])
     dof = len(info["fvec"]) - len(v)
@@ -122,19 +122,15 @@ def fit_doublet(spe, w1, w2):
         err = None
     if err is not None:
         err_mu_1 = err[0]
-        err_sigma_1 = err[1]
-        err_A_1 = err[2]
-        err_mu_2 = err[3]
-        err_sigma_2 = err[4]
-        err_A_2 = err[5]
+        err_A_1 = err[1]
+        err_mu_2 = err[2]
+        err_A_2 = err[3]
     else:
         err_mu_1 = np.NAN
-        err_sigma_1 = np.NAN
         err_A_1 = np.NAN
         err_mu_2 = np.NAN
-        err_sigma_2 = np.NAN
         err_A_2 = np.NAN
-    return mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, sigma_1_fit, err_sigma_1, sigma_2_fit, err_sigma_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit
+    return mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit
 
 
 def fit_line(spe, w1):
@@ -146,17 +142,16 @@ def fit_line(spe, w1):
     line = np.polyfit(wavelength, flux, 1)
     A = abs(max(flux) - min(flux))
     mu = np.mean(wavelength)
-    sigma = np.std(wavelength)
-    parameters = mu, sigma, A, line[1], line[0]
+    parameters = mu, A, line[1], line[0]
     # make fits
     fit_gaussiano = leastsq(chi_cuadrado, parametros, args=(wavelength, flux))
-    mu_fit, sigma_fit, A_fit, n_fit, m = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2], fit_gaussiano[0][3], fit_gaussiano[0][4]
+    mu_fit, A_fit, n_fit, m = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2], fit_gaussiano[0][3]
     # calculate flux
-    flux_fit = A_fit*sigma_fit
-    return mu_fit, sigma_fit, A_fit, flux_fit, n_fit, m_fit
+    flux_fit = A_fit*sigma
+    return mu_fit, A_fit, flux_fit, n_fit, m_fit
 
 
-def flux(A, sigma, err_A, err_sigma):
+def flux(A, err_A):
     """
     """
     flux = A*sigma
