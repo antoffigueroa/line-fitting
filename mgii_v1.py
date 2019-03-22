@@ -8,7 +8,7 @@ import scipy.stats
 
 cube=Cube('/Users/antonia/taller-de-investigacion/SGASJ1226/muse/r4_cube_mgii_mock.fits')
 
-wave0=2796.3521
+wave0=2796.352
 z=0.77113
 wratio=1.0025672375
 wavep = wave0*(1+z)
@@ -41,7 +41,7 @@ for k in range(ncoords):
     plt.figure()
     plt.plot(spe.wave.coord(),spe.data)
     plt.show()
-    mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, sigma_1_fit, err_sigma_1, sigma_2_fit, err_sigma_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit, n_fit, m_fit = fit_doublet(spe,wavep,wavep_2)
+    mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, sigma_1_fit, err_sigma_1, sigma_2_fit, err_sigma_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit = fit_doublet(spe,wavep,wavep_2)
     flux_1, err_flux_1 = flux(A_1_fit, sigma_1_fit, err_A_1, err_sigma_1)
     flux_2, err_flux_2 = flux(A_2_fit, sigma_2_fit, err_A_2, err_sigma_2)
     EW_1, err_EW_1 = eq_width(flux_1,err_flux_1,z)

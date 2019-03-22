@@ -28,13 +28,14 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     wratio: only used if you know there is another line close to the line you
     are working with
     """
-    wratio = wratio*(1+z)
     if wratio is None:
-        wratio = 1
-    r1 = np.int(spe.wave.pixel(w_0+10*wratio))
-    r2 = np.int(spe.wave.pixel(w_0+10*wratio+20))
-    l1 = np.int(spe.wave.pixel(w_0-10*wratio-20))
-    l2 = np.int(spe.wave.pixel(w_0-10*wratio))
+        wratio_new = 1
+    else:
+        wratio_new = wratio*(1+z)
+    r1 = np.int(spe.wave.pixel(w_0+10*wratio_new))
+    r2 = np.int(spe.wave.pixel(w_0+10*wratio_new+20))
+    l1 = np.int(spe.wave.pixel(w_0-10*wratio_new-20))
+    l2 = np.int(spe.wave.pixel(w_0-10*wratio_new))
     print r1, r2, l1, l2
     flux = spe.data
     right_part = flux[r1:r2]
@@ -61,14 +62,12 @@ def gaussian(parameters, x):
     g = A * scipy.stats.norm(loc=mu, scale=sigma).pdf(x)
     return g
 
-
+"""
 def line(parameters, x):
-    """
-    """
     m, n = parameters
     y = m * x + n
     return y
-
+"""
 
 def simple_model(parameters, x):
     """
@@ -80,8 +79,8 @@ def simple_model(parameters, x):
 def double_model(parameters, x):
     """
     """
-    mu1, sigma1, A1, mu2, sigma2, A2, m, n = parameters
-    return line((m, n), x)-gaussian((mu1, sigma1, A1), x)-gaussian((mu2, sigma2, A2), x)
+    mu1, sigma1, A1, mu2, sigma2, A2 = parameters
+    return 1-gaussian((mu1, sigma1, A1), x)-gaussian((mu2, sigma2, A2), x)
 
 
 def chi_cuadrado(parameters, x, y):
@@ -98,8 +97,6 @@ def fit_doublet(spe, w1, w2):
     # print flux
     # print wavelength
     # define priors
-    line_prior = np.polyfit(wavelength, flux, 1)
-    print (3*w1-w2)/2.0, (w1+w2)/2.0
     flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1-w2)/2.0, (w1+w2)/2.0)
     A_1 = abs(max(flux_cut1) - min(flux_cut1))
     mu_1 = np.mean(wl_cut1)
@@ -109,10 +106,10 @@ def fit_doublet(spe, w1, w2):
     mu_2 = np.mean(wl_cut2)
     sigma_2 = np.std(wl_cut2)
     # print line_prior[0]
-    parameters = mu_1, sigma_1, A_1, mu_2, sigma_2, A_2, line_prior[1], line_prior[0]
+    parameters = mu_1, sigma_1, A_1, mu_2, sigma_2, A_2
     # make fits
     v, covar, info, mesg, success = leastsq(chi_cuadrado, parameters, args=(wavelength, flux), full_output=1,  maxfev=100000)
-    mu_1_fit, sigma_1_fit, A_1_fit, mu_2_fit, sigma_2_fit, A_2_fit, n_fit, m_fit = v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]
+    mu_1_fit, sigma_1_fit, A_1_fit, mu_2_fit, sigma_2_fit, A_2_fit = v[0], v[1], v[2], v[3], v[4], v[5]
     # calculate fluxes
     flux_1_fit = A_1_fit*sigma_1_fit
     flux_2_fit = A_2_fit*sigma_2_fit
@@ -130,8 +127,6 @@ def fit_doublet(spe, w1, w2):
         err_mu_2 = err[3]
         err_sigma_2 = err[4]
         err_A_2 = err[5]
-        err_n = err[6]
-        err_m = err[7]
     else:
         err_mu_1 = np.NAN
         err_sigma_1 = np.NAN
@@ -139,9 +134,7 @@ def fit_doublet(spe, w1, w2):
         err_mu_2 = np.NAN
         err_sigma_2 = np.NAN
         err_A_2 = np.NAN
-        err_n = np.NAN
-        err_m = np.NAN
-    return mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, sigma_1_fit, err_sigma_1, sigma_2_fit, err_sigma_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit, n_fit, m_fit
+    return mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, sigma_1_fit, err_sigma_1, sigma_2_fit, err_sigma_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit
 
 
 def fit_line(spe, w1):
@@ -175,6 +168,6 @@ def eq_width(flux, err_flux, z):
     """
     takes flux and turns it into equivalent width
     """
-    ew = -1.0*flux/(1+z)
+    ew = flux/(1+z)
     err_ew = err_flux/(1+z)
     return ew, err_ew
