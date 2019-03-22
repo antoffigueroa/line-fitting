@@ -38,12 +38,12 @@ for k in range(ncoords):
     sigma = np.sqrt(var)
     spe=normalize(spe, wavep, z, wratio=wratio, show=True)
     #plt.close()
-    plt.figure()
-    plt.plot(spe.wave.coord(),spe.data)
-    plt.show()
-    mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, sigma_1_fit, err_sigma_1, sigma_2_fit, err_sigma_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit = fit_doublet(spe,wavep,wavep_2)
-    flux_1, err_flux_1 = flux(A_1_fit, sigma_1_fit, err_A_1, err_sigma_1)
-    flux_2, err_flux_2 = flux(A_2_fit, sigma_2_fit, err_A_2, err_sigma_2)
+    #plt.figure()
+    #plt.plot(spe.wave.coord(),spe.data)
+    #plt.show()
+    mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit = fit_doublet(spe,wavep,wavep_2)
+    flux_1, err_flux_1 = flux(A_1_fit, err_A_1)
+    flux_2, err_flux_2 = flux(A_2_fit, err_A_2)
     EW_1, err_EW_1 = eq_width(flux_1,err_flux_1,z)
     EW_2, err_EW_2 = eq_width(flux_2,err_flux_2,z)
     if EW_1/err_EW_1 >= 2.5:
@@ -52,4 +52,10 @@ for k in range(ncoords):
     else:
         print ":("
 
+best_fit = double_model((mu_1_fit, A_1_fit, mu_2_fit, A_2_fit), np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000))
+
+plt.figure()
+plt.plot(np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000), best_fit)
+plt.plot(spe.wave.coord(), spe.data)
+plt.show()
 #print contador
