@@ -54,8 +54,10 @@ def normalize(spe, w_0, z, wratio=None, show=False):
         plt.show()
     return spe
 
-sigma=2.7/(2*np.sqrt(2*np.log(2)))
+
+sigma = 2.7/(2*np.sqrt(2*np.log(2)))
 err_sigma = 0
+
 
 def gaussian(parameters, x):
     """
@@ -64,12 +66,14 @@ def gaussian(parameters, x):
     g = A * scipy.stats.norm(loc=mu, scale=sigma).pdf(x)
     return g
 
+
 """
 def line(parameters, x):
     m, n = parameters
     y = m * x + n
     return y
 """
+
 
 def simple_model(parameters, x):
     """
