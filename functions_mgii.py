@@ -82,11 +82,15 @@ def simple_model(parameters, x):
     return 1-gaussian((mu, A), x)
 
 
+w1 = 2796.352
+w2 = 2803.531
+wratio = 1.0025672375
+
 def double_model(parameters, x):
     """
     """
-    mu1, A1, mu2, A2 = parameters
-    return 1-gaussian((mu1, A1), x)-gaussian((mu2, A2), x)
+    A1, A2, mu = parameters
+    return 1-gaussian((mu, A1), x)-gaussian((mu*wratio, A2), x)
 
 
 def chi_cuadrado(parameters, x, y):
@@ -95,7 +99,7 @@ def chi_cuadrado(parameters, x, y):
     return y-double_model(parameters, x)
 
 
-def fit_doublet(spe, w1, w2):
+def fit_doublet(spe, z):
     """
     """
     # cut the spectra
@@ -105,15 +109,14 @@ def fit_doublet(spe, w1, w2):
     # define priors
     flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1-w2)/2.0, (w1+w2)/2.0)
     A_1 = abs(max(flux_cut1) - min(flux_cut1))
-    mu_1 = np.mean(wl_cut1)
     flux_cut2, wl_cut2 = cut_spectra(spe, (w1+w2)/2.0, (3*w2-w1)/2.0)
     A_2 = abs(max(flux_cut2) - min(flux_cut2))
-    mu_2 = np.mean(wl_cut2)
+    mu = w1*(1+z)
     # print line_prior[0]
-    parameters = mu_1, A_1, mu_2, A_2
+    parameters = A_1, A_2, mu
     # make fits
     v, covar, info, mesg, success = leastsq(chi_cuadrado, parameters, args=(wavelength, flux), full_output=1,  maxfev=100000)
-    mu_1_fit, A_1_fit, mu_2_fit, A_2_fit = v[0], v[1], v[2], v[3]
+    A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     # calculate fluxes
     flux_1_fit = A_1_fit*sigma
     flux_2_fit = A_2_fit*sigma
@@ -125,16 +128,14 @@ def fit_doublet(spe, w1, w2):
     else:
         err = None
     if err is not None:
-        err_mu_1 = err[0]
-        err_A_1 = err[1]
-        err_mu_2 = err[2]
-        err_A_2 = err[3]
+        err_A_1 = err[0]
+        err_A_2 = err[1]
+        err_mu=err[2]
     else:
-        err_mu_1 = np.NAN
         err_A_1 = np.NAN
-        err_mu_2 = np.NAN
         err_A_2 = np.NAN
-    return mu_1_fit, err_mu_1, mu_2_fit, err_mu_2, A_1_fit, err_A_1, A_2_fit, err_A_2, flux_1_fit, flux_2_fit
+        err_mu = np.NAN
+    return A_1_fit, err_A_1, A_2_fit, err_A_2, mu_fit, err_mu, flux_1_fit, flux_2_fit
 
 
 def fit_line(spe, w1):
