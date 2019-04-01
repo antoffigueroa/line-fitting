@@ -103,13 +103,13 @@ def fit_doublet(spe, z):
     """
     """
     # cut the spectra
-    flux, wavelength = cut_spectra(spe, w1-20, w2+20)
+    flux, wavelength = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
     # print flux
     # print wavelength
     # define priors
-    flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1-w2)/2.0, (w1+w2)/2.0)
+    flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1*(1+z)-w1*wratio*(1+z))/2.0, (w1*(1+z)+w1*wratio*(1+z))/2.0)
     A_1 = abs(max(flux_cut1) - min(flux_cut1))
-    flux_cut2, wl_cut2 = cut_spectra(spe, (w1+w2)/2.0, (3*w2-w1)/2.0)
+    flux_cut2, wl_cut2 = cut_spectra(spe, (w1*(1+z)+w1*wratio*(1+z))/2.0, (3*w1*wratio*(1+z)-w1*(1+z))/2.0)
     A_2 = abs(max(flux_cut2) - min(flux_cut2))
     mu = w1*(1+z)
     # print line_prior[0]

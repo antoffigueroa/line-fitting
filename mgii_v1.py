@@ -36,12 +36,12 @@ for k in range(ncoords):
     spe = cube[:,x,y]
     var = spe.var
     sigma = np.sqrt(var)
-    spe=normalize(spe, wavep, z, wratio=wratio, show=True)
+    spe=normalize(spe, wavep, z, wratio=wratio, show=False)
     #plt.close()
     #plt.figure()
     #plt.plot(spe.wave.coord(),spe.data)
     #plt.show()
-    A_1_fit, err_A_1, A_2_fit, err_A_2, z_fit, err_z, flux_1_fit, flux_2_fit = fit_doublet(spe, z)
+    A_1_fit, err_A_1, A_2_fit, err_A_2, mu_fit, err_mu, flux_1_fit, flux_2_fit = fit_doublet(spe, z)
     flux_1, err_flux_1 = flux(A_1_fit, err_A_1)
     flux_2, err_flux_2 = flux(A_2_fit, err_A_2)
     EW_1, err_EW_1 = eq_width(flux_1,err_flux_1,z)
@@ -52,7 +52,7 @@ for k in range(ncoords):
     else:
         print ":("
 
-best_fit = double_model((A_1_fit, A_2_fit, z_fit), np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000))
+best_fit = double_model((A_1_fit, A_2_fit, mu_fit), np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000))
 
 plt.figure()
 plt.plot(np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000), best_fit)
