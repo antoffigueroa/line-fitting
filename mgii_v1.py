@@ -62,7 +62,7 @@ for k in range(ncoords):
     flux_2, err_flux_2 = flux(A_2_fit, err_A_2)
     EW_1, err_EW_1 = eq_width(flux_1,err_flux_1,z)
     EW_2, err_EW_2 = eq_width(flux_2,err_flux_2,z)
-    if EW_1/err_EW_1 >= 2.5 and A_1_fit > 0 and A_2_fit > 0 and A_1_fit/A_2_fit < 2:
+    if EW_1/err_EW_1 >= 2. and A_1_fit > 0 and A_2_fit > 0 and A_1_fit/A_2_fit < 2:
     	print "succesful fit at: "+str(x)+", "+str(y)+' with EW: '+str(EW_1)
         contador = contador +1
         #best_fit = double_model((A_1_fit, A_2_fit, mu_fit), np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000))
