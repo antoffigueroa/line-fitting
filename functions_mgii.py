@@ -177,5 +177,9 @@ def velocity(w_obs, z):
     """
     c = 299792.458
     z_obs = w_obs/w1 - 1
+<<<<<<< HEAD
     vel = (z_obs-z)/(1+z)*c
+=======
+    vel = (z_obs-z)/(1+z)
+>>>>>>> adb57e1e3ca25ca008e1a4bbf73e491853ac7fc6
     return vel
