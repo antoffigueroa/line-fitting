@@ -86,6 +86,7 @@ w1 = 2796.352
 w2 = 2803.531
 wratio = 1.0025672375
 
+
 def double_model(parameters, x):
     """
     """
@@ -130,7 +131,7 @@ def fit_doublet(spe, z):
     if err is not None:
         err_A_1 = err[0]
         err_A_2 = err[1]
-        err_mu=err[2]
+        err_mu = err[2]
     else:
         err_A_1 = np.NAN
         err_A_2 = np.NAN
