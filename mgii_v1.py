@@ -8,7 +8,9 @@ import scipy.stats
 import aplpy
 from astropy.io import fits
 
-cube=Cube('/Users/antonia/taller-de-investigacion/SGASJ1226/muse/r4_cube_mgii_mock.fits')
+fits_file = '/Users/antonia/taller-de-investigacion/SGASJ1226/muse/r4_cube_mgii_mock.fits'
+
+cube=Cube(fits_file)
 
 wave0=2796.352
 z=0.77113
