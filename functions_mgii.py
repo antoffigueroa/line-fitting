@@ -36,7 +36,6 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     r2 = np.int(spe.wave.pixel(w_0+10*wratio_new+20))
     l1 = np.int(spe.wave.pixel(w_0-10*wratio_new-20))
     l2 = np.int(spe.wave.pixel(w_0-10*wratio_new))
-    print r1, r2, l1, l2
     flux = spe.data
     right_part = flux[r1:r2]
     left_part = flux[l1:l2]
