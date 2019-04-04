@@ -67,6 +67,7 @@ for k in range(ncoords):
     if EW_1/err_EW_1 >= 2. and A_1_fit > 0 and A_2_fit > 0 and A_1_fit/A_2_fit < 2:
         print "succesful fit at: "+str(x)+", "+str(y)+' with EW: '+str(EW_1)
         contador = contador + 1
+        velocidad = velocity(mu_fit, z)
         # best_fit = double_model((A_1_fit, A_2_fit, mu_fit), np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000))
         # plt.figure()
         # plt.plot(np.linspace(spe.wave.coord()[0], spe.wave.coord()[-1], num=100000), best_fit)

@@ -172,3 +172,11 @@ def eq_width(flux, err_flux, z):
     ew = flux/(1+z)
     err_ew = err_flux/(1+z)
     return ew, err_ew
+
+def velocity(w_obs, z):
+    """
+    """
+    c = 299792.458
+    z_obs = w_obs/w1 - 1
+    vel = (z_obs-z)/(1+z)
+    return v
