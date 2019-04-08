@@ -62,7 +62,7 @@ def gaussian(parameters, x):
     """
     """
     mu, A = parameters
-    g = A * scipy.stats.norm(loc=mu, scale=sigma).pdf(x)
+    g = A * sigma * np.sqrt(2*np.pi) * scipy.stats.norm(loc=mu, scale=sigma).pdf(x)
     return g
 
 
@@ -159,8 +159,8 @@ def fit_line(spe, w1):
 def flux(A, err_A):
     """
     """
-    flux = A*sigma
-    err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)**2)**0.5
+    flux = A*sigma*np.sqrt(2*np.pi)
+    err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)**2)**0.5*np.sqrt(2*np.pi)
     return flux, err_flux
 
 
@@ -177,9 +177,5 @@ def velocity(w_obs, z):
     """
     c = 299792.458
     z_obs = w_obs/w1 - 1
-<<<<<<< HEAD
     vel = (z_obs-z)/(1+z)*c
-=======
-    vel = (z_obs-z)/(1+z)
->>>>>>> adb57e1e3ca25ca008e1a4bbf73e491853ac7fc6
     return vel
