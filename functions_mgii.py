@@ -81,9 +81,8 @@ def simple_model(parameters, x):
     return 1-gaussian((mu, A), x)
 
 
-w1 = 2796.352
-w2 = 2803.531
-wratio = 1.0025672375
+w1_mgii = 2796.352
+wratio_mgii = 1.0025672375
 
 
 def double_model(parameters, x):
@@ -92,16 +91,38 @@ def double_model(parameters, x):
     A1, A2, mu = parameters
     return 1-gaussian((mu, A1), x)-gaussian((mu*wratio, A2), x)
 
+w1_oii = 3727.092
+wratio_oii = 3729.875/w1_oii
 
-def chi_cuadrado(parameters, x, y):
+def double_model_emission(parameters, x):
+    """
+    """
+    A1, A2, mu = parameters
+    return 1+gaussian((mu, A1), x) + gaussian((mu*wratio_emission), x)
+
+
+def chi_cuadrado_abs(parameters, x, y):
     """
     """
     return y-double_model(parameters, x)
 
+def chi_cuadrado_em(parameters, x, y):
+    """
+    """
+    return y-double_model_emission(parameters, x)
 
-def fit_doublet(spe, z):
+
+def fit_doublet(spe, z, how = 'abs'):
     """
     """
+    if how == 'abs':
+        function = chi_cuadrado_abs
+        w1 = w1_mgii
+        wratio= wratio_mgii
+    else:
+        function = chi_cuadrado_em
+        w1 = w1_oii
+        wratio = wratio_oii
     # cut the spectra
     flux, wavelength = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
     # print flux
@@ -115,7 +136,7 @@ def fit_doublet(spe, z):
     # print line_prior[0]
     parameters = A_1, A_2, mu
     # make fits
-    v, covar, info, mesg, success = leastsq(chi_cuadrado, parameters, args=(wavelength, flux), full_output=1,  maxfev=100000)
+    v, covar, info, mesg, success = leastsq(function, parameters, args=(wavelength, flux), full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     # calculate fluxes
     flux_1_fit = A_1_fit*sigma
