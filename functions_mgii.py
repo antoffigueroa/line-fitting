@@ -89,7 +89,7 @@ def double_model(parameters, x):
     """
     """
     A1, A2, mu = parameters
-    return 1-gaussian((mu, A1), x)-gaussian((mu*wratio, A2), x)
+    return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
 
 w1_oii = 3727.092
 wratio_oii = 3729.875/w1_oii
@@ -114,12 +114,14 @@ def chi_cuadrado_em(parameters, x, y):
 
 def fit_doublet(spe, z, how = 'abs'):
     """
+    how: 'abs' for absorption
+         'emi' for emission
     """
     if how == 'abs':
         function = chi_cuadrado_abs
         w1 = w1_mgii
         wratio= wratio_mgii
-    else:
+    elif how == 'emi':
         function = chi_cuadrado_em
         w1 = w1_oii
         wratio = wratio_oii
@@ -128,10 +130,8 @@ def fit_doublet(spe, z, how = 'abs'):
     # print flux
     # print wavelength
     # define priors
-    flux_cut1, wl_cut1 = cut_spectra(spe, (3*w1*(1+z)-w1*wratio*(1+z))/2.0, (w1*(1+z)+w1*wratio*(1+z))/2.0)
-    A_1 = abs(max(flux_cut1) - min(flux_cut1))
-    flux_cut2, wl_cut2 = cut_spectra(spe, (w1*(1+z)+w1*wratio*(1+z))/2.0, (3*w1*wratio*(1+z)-w1*(1+z))/2.0)
-    A_2 = abs(max(flux_cut2) - min(flux_cut2))
+    A_1 = abs(max(flux) - min(flux))
+    A_2 = abs(max(flux) - min(flux))
     mu = w1*(1+z)
     # print line_prior[0]
     parameters = A_1, A_2, mu
@@ -193,9 +193,13 @@ def eq_width(flux, err_flux, z):
     err_ew = err_flux/(1+z)
     return ew, err_ew
 
-def velocity(w_obs, z):
+def velocity(w_obs, z, how = 'abs'):
     """
     """
+    if how == 'abs':
+        w1 = w1_mgii
+    elif how == 'emi':
+        w1 = w1_oii
     c = 299792.458
     z_obs = w_obs/w1 - 1
     vel = (z_obs-z)/(1+z)*c
