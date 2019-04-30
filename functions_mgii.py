@@ -62,7 +62,8 @@ def gaussian(parameters, x):
     """
     """
     mu, A = parameters
-    g = A * sigma * np.sqrt(2*np.pi) * scipy.stats.norm(loc=mu, scale=sigma).pdf(x)
+    g = A * sigma * np.sqrt(2*np.pi) * scipy.stats.norm(loc=mu,
+                                                        scale=sigma).pdf(x)
     return g
 
 
@@ -139,7 +140,9 @@ def fit_doublet(spe, z, how='abs'):
     # print line_prior[0]
     parameters = A_1, A_2, mu
     # make fits
-    v, covar, info, mesg, success = leastsq(function, parameters, args=(wavelength, flux), full_output=1,  maxfev=100000)
+    v, covar, info, mesg, success = leastsq(function, parameters,
+                                            args=(wavelength, flux),
+                                            full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     # calculate fluxes
     flux_1_fit = A_1_fit*sigma
@@ -148,7 +151,8 @@ def fit_doublet(spe, z, how='abs'):
     chisq = sum(info["fvec"] * info["fvec"])
     dof = len(info["fvec"]) - len(v)
     if covar is not None:
-        err = np.array([np.sqrt(np.abs(covar[i, i])) * np.sqrt(np.abs(chisq / dof)) for i in range(len(v))])
+        err = np.array([np.sqrt(np.abs(covar[i, i])) *
+                        np.sqrt(np.abs(chisq / dof)) for i in range(len(v))])
     else:
         err = None
     if err is not None:
@@ -184,7 +188,8 @@ def flux(A, err_A):
     """
     """
     flux = A*sigma*np.sqrt(2*np.pi)
-    err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)**2)**0.5*np.sqrt(2*np.pi)
+    err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)
+                        ** 2)**0.5*np.sqrt(2*np.pi)
     return flux, err_flux
 
 
