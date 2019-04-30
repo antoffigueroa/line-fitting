@@ -210,19 +210,25 @@ def velocity(w_obs, z, how='abs'):
     return vel
 
 
-def def_zero():
+def def_zero(vel_matrix):
     """
     Recieves a velocity matrix and returns the position closer to 0
     """
+    result = np.where(vel_matrix == numpy.amin(vel_matrix))
+    return (result[0][0], result[1][0])
 
 
-def calculate_distance():
+def calculate_distance(x1, y1, x2, y2):
     """
-    Recieves two coordinates and calculates their distance
+    Recieves two point coordinates and calculates their distance
     """
+    distance = np.sqrt((x1-x2)**2+(y1-y2)**2)
+    return distance
 
 
-def scale():
+def scale_pixel(scale, distance):
     """
     turns pixel distances into kpc miau miau
     """
+    kpc = scale * distance
+    return kpc
