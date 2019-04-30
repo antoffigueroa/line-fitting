@@ -91,8 +91,10 @@ def double_model(parameters, x):
     A1, A2, mu = parameters
     return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
 
+
 w1_oii = 3727.092
 wratio_oii = 3729.875/w1_oii
+
 
 def double_model_emission(parameters, x):
     """
@@ -106,13 +108,14 @@ def chi_cuadrado_abs(parameters, x, y):
     """
     return y-double_model(parameters, x)
 
+
 def chi_cuadrado_em(parameters, x, y):
     """
     """
     return y-double_model_emission(parameters, x)
 
 
-def fit_doublet(spe, z, how = 'abs'):
+def fit_doublet(spe, z, how='abs'):
     """
     how: 'abs' for absorption
          'emi' for emission
@@ -120,7 +123,7 @@ def fit_doublet(spe, z, how = 'abs'):
     if how == 'abs':
         function = chi_cuadrado_abs
         w1 = w1_mgii
-        wratio= wratio_mgii
+        wratio = wratio_mgii
     elif how == 'emi':
         function = chi_cuadrado_em
         w1 = w1_oii
@@ -193,7 +196,8 @@ def eq_width(flux, err_flux, z):
     err_ew = err_flux/(1+z)
     return ew, err_ew
 
-def velocity(w_obs, z, how = 'abs'):
+
+def velocity(w_obs, z, how='abs'):
     """
     """
     if how == 'abs':
@@ -205,11 +209,11 @@ def velocity(w_obs, z, how = 'abs'):
     vel = (z_obs-z)/(1+z)*c
     return vel
 
+
 def def_zero():
     """
     Recieves a velocity matrix and returns the position closer to 0
     """
-
 
 
 def calculate_distance():
