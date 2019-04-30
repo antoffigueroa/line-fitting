@@ -204,3 +204,21 @@ def velocity(w_obs, z, how = 'abs'):
     z_obs = w_obs/w1 - 1
     vel = (z_obs-z)/(1+z)*c
     return vel
+
+def def_zero():
+    """
+    Recieves a velocity matrix and returns the position closer to 0
+    """
+
+
+
+def calculate_distance():
+    """
+    Recieves two coordinates and calculates their distance
+    """
+
+
+def scale():
+    """
+    turns pixel distances into kpc miau miau
+    """
