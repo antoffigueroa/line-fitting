@@ -219,7 +219,7 @@ def def_zero(vel_matrix):
     """
     Recieves a velocity matrix and returns the position closer to 0
     """
-    result = np.where(vel_matrix == np.amin(vel_matrix))
+    result = np.where(vel_matrix == np.nanmin(vel_matrix))
     return (result[0][0], result[1][0])
 
 
