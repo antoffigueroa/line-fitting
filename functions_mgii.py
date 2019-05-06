@@ -11,11 +11,11 @@ def create_mask():
 
 
 def cut_spectra(spe, w_ini, w_fin):
-    flux = spe.data
-    wavelength = spe.wave.coord()
-    spe_nuevo = spe
-    p1 = np.int(spe.wave.pixel(w_ini))
-    p2 = np.int(spe.wave.pixel(w_fin))
+    spe_new = spe
+    flux = spe_new.data
+    wavelength = spe_new.wave.coord()
+    p1 = np.int(spe_new.wave.pixel(w_ini))
+    p2 = np.int(spe_new.wave.pixel(w_fin))
     cut_flux = flux[p1:p2]
     cut_wavelength = wavelength[p1:p2]
     return cut_flux, cut_wavelength
@@ -52,6 +52,18 @@ def normalize(spe, w_0, z, wratio=None, show=False):
         plt.plot(w_0-10*wratio, 1, '<')
         plt.show()
     return spe
+
+def normalize_poly(spe):
+    """
+    """
+    flux = spe.data
+    wavelength = spe.wave.coord()
+    poly = polyfit(wavelength)
+    line = poly(wavelength)
+    spe_new = spe
+    spe_new.data = flux/line
+    return spe_new
+
 
 
 sigma = 2.7/(2*np.sqrt(2*np.log(2)))
