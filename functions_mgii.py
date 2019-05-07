@@ -66,15 +66,19 @@ def normalize_poly(spe, z):
     return spe_new
 
 
-sigma = 2.7/(2*np.sqrt(2*np.log(2)))
-err_sigma = 0
+sigma_fixed = 2.7/(2*np.sqrt(2*np.log(2)))
+err_sigma_fixed = 0
 
 
-def gaussian_fixed(parameters, x):
+def gaussian(parameters, x):
     """
     """
-    mu, A = parameters
-    g = A * sigma * np.sqrt(2*np.pi) * scipy.stats.norm(loc=mu,
+    if len(parameters) == 2:
+        mu, A = parameters
+        sigma = sigma_fixed
+    else:
+        mu, A, sigma = parameters
+    g = A * sigma_fixed * np.sqrt(2*np.pi) * scipy.stats.norm(loc=mu,
                                                         scale=sigma).pdf(x)
     return g
 
@@ -98,7 +102,7 @@ w1_mgii = 2796.352
 wratio_mgii = 1.0025672375
 
 
-def double_model_fixed(parameters, x):
+def double_model(parameters, x):
     """
     """
     A1, A2, mu = parameters
@@ -109,44 +113,38 @@ w1_oii = 3727.092
 wratio_oii = 3729.875/w1_oii
 
 
-def double_model_emission_fixed(parameters, x):
+def double_model_em(parameters, x):
     """
     """
     A1, A2, mu = parameters
-    return 1+gaussian_fixed((mu, A1), x) + gaussian_fixed((mu*wratio_emission), x)
+    return 1+gaussian((mu, A1), x) + gaussian((mu*wratio_emission), x)
 
 
-def chi_cuadrado_abs_fixed(parameters, x, y):
+def chi_cuadrado_abs(parameters, x, y):
     """
     """
-    return y-double_model_fixed(parameters, x)
+    return y-double_model(parameters, x)
 
 
-def chi_cuadrado_em_fixed(parameters, x, y):
+def chi_cuadrado_em(parameters, x, y):
     """
     """
-    return y-double_model_emission_fixed(parameters, x)
+    return y-double_model_em(parameters, x)
 
 
 def fit_doublet(spe, z, how='abs', fwhm=None):
     """
     how: 'abs' for absorption
-         'emi' for emission
+         'em' for emission
     """
     if how == 'abs':
         w1 = w1_mgii
         wratio = wratio_mgii
-        if fwhm != None:
-            function = chi_cuadrado_abs
-        else:
-            function = chi_cuadrado_abs_fixed
-    elif how == 'emi':
+        function = chi_cuadrado_abs
+    elif how == 'em':
         w1 = w1_oii
         wratio = wratio_oii
-        if fwhm != None:
-            function = chi_cuadrado_em
-        else:
-            function = chi_cuadrado_em_fixed
+        function = chi_cuadrado_em
     # cut the spectra
     flux, wavelength = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
     # print flux
@@ -163,8 +161,8 @@ def fit_doublet(spe, z, how='abs', fwhm=None):
                                             full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     # calculate fluxes
-    flux_1_fit = A_1_fit*sigma
-    flux_2_fit = A_2_fit*sigma
+    flux_1_fit = A_1_fit*sigma_fixed
+    flux_2_fit = A_2_fit*sigma_fixed
     # calculate errors
     chisq = sum(info["fvec"] * info["fvec"])
     dof = len(info["fvec"]) - len(v)
@@ -202,7 +200,7 @@ def fit_line(spe, w1):
     return mu_fit, A_fit, flux_fit, n_fit, m_fit
 
 
-def flux(A, err_A):
+def flux(A, err_A, sigma = sigma_fixed):
     """
     """
     flux = A*sigma*np.sqrt(2*np.pi)
