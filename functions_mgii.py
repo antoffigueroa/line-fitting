@@ -53,24 +53,24 @@ def normalize(spe, w_0, z, wratio=None, show=False):
         plt.show()
     return spe
 
-def normalize_poly(spe):
+def normalize_poly(spe, z):
     """
     """
     flux = spe.data
     wavelength = spe.wave.coord()
-    poly = polyfit(wavelength)
-    line = poly(wavelength)
+    flux_cut, wavelength_cut = cut_spectra(spe, w1_mgii*(1+z)-20, w1_mgii*wratio_mgii*(1+z)+20)
+    poly = np.polyfit(wavelength_cut, flux_cut, 1)
+    line_poly = line((poly[1], poly[0]), wavelength)
     spe_new = spe
-    spe_new.data = flux/line
+    spe_new.data = flux/line_poly
     return spe_new
-
 
 
 sigma = 2.7/(2*np.sqrt(2*np.log(2)))
 err_sigma = 0
 
 
-def gaussian(parameters, x):
+def gaussian_fixed(parameters, x):
     """
     """
     mu, A = parameters
@@ -79,12 +79,12 @@ def gaussian(parameters, x):
     return g
 
 
-"""
+
 def line(parameters, x):
     m, n = parameters
     y = m * x + n
     return y
-"""
+
 
 
 def simple_model(parameters, x):
@@ -98,7 +98,7 @@ w1_mgii = 2796.352
 wratio_mgii = 1.0025672375
 
 
-def double_model(parameters, x):
+def double_model_fixed(parameters, x):
     """
     """
     A1, A2, mu = parameters
@@ -109,38 +109,44 @@ w1_oii = 3727.092
 wratio_oii = 3729.875/w1_oii
 
 
-def double_model_emission(parameters, x):
+def double_model_emission_fixed(parameters, x):
     """
     """
     A1, A2, mu = parameters
-    return 1+gaussian((mu, A1), x) + gaussian((mu*wratio_emission), x)
+    return 1+gaussian_fixed((mu, A1), x) + gaussian_fixed((mu*wratio_emission), x)
 
 
-def chi_cuadrado_abs(parameters, x, y):
+def chi_cuadrado_abs_fixed(parameters, x, y):
     """
     """
-    return y-double_model(parameters, x)
+    return y-double_model_fixed(parameters, x)
 
 
-def chi_cuadrado_em(parameters, x, y):
+def chi_cuadrado_em_fixed(parameters, x, y):
     """
     """
-    return y-double_model_emission(parameters, x)
+    return y-double_model_emission_fixed(parameters, x)
 
 
-def fit_doublet(spe, z, how='abs'):
+def fit_doublet(spe, z, how='abs', fwhm=None):
     """
     how: 'abs' for absorption
          'emi' for emission
     """
     if how == 'abs':
-        function = chi_cuadrado_abs
         w1 = w1_mgii
         wratio = wratio_mgii
+        if fwhm != None:
+            function = chi_cuadrado_abs
+        else:
+            function = chi_cuadrado_abs_fixed
     elif how == 'emi':
-        function = chi_cuadrado_em
         w1 = w1_oii
         wratio = wratio_oii
+        if fwhm != None:
+            function = chi_cuadrado_em
+        else:
+            function = chi_cuadrado_em_fixed
     # cut the spectra
     flux, wavelength = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
     # print flux
