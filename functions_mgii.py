@@ -241,11 +241,11 @@ def def_zero(vel_matrix):
     return (result[0][0], result[1][0])
 
 
-def calculate_distance(x1, y1, x2, y2):
+def calculate_distance(x1, y1, x2, y2, scale):
     """
     Recieves two point coordinates and calculates their distance
     """
-    distance = np.sqrt((x1-x2)**2+(y1-y2)**2)
+    distance = np.sqrt((x1-x2)**2+(y1-y2)**2)*scale
     return distance
 
 
