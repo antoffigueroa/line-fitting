@@ -251,7 +251,7 @@ def calculate_distance(x1, y1, x2, y2, scale):
 
 def scale_pixel(scale, distance):
     """
-    turns pixel distances into kpc miau miau
+    turns pixel distances into kpc
     """
     kpc = scale * distance
     return kpc
