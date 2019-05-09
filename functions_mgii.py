@@ -105,8 +105,12 @@ wratio_mgii = 1.0025672375
 def double_model(parameters, x):
     """
     """
-    A1, A2, mu = parameters
-    return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
+    if len(parameters) == 3:
+        A1, A2, mu = parameters
+        return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
+    else:
+        A1, A2, mu, sigma = parameters
+        return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2, sigma), x)
 
 
 w1_oii = 3727.092
@@ -116,8 +120,12 @@ wratio_oii = 3729.875/w1_oii
 def double_model_em(parameters, x):
     """
     """
-    A1, A2, mu = parameters
-    return 1+gaussian((mu, A1), x) + gaussian((mu*wratio_emission), x)
+    if len(parameters) == 3:
+        A1, A2, mu = parameters
+        return 1+gaussian((mu, A1), x)+gaussian((mu*wratio_mgii, A2), x)
+    else:
+        A1, A2, mu, sigma = parameters
+        return 1+gaussian((mu, A1, sigma), x)+gaussian((mu*wratio_mgii, A2, sigma), x)
 
 
 def chi_cuadrado_abs(parameters, x, y):
