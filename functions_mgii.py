@@ -65,10 +65,6 @@ def normalize_poly(spe, z):
     line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe
     spe_new.data = flux/line_poly
-    #plt.figure()
-    #plt.plot(wavelength, spe.data)
-    #plt.plot(wavelength, line_poly)
-    #plt.show()
     return spe_new
 
 
