@@ -62,9 +62,13 @@ def normalize_poly(spe, z):
     flux_cut, wavelength_cut = cut_spectra(
         spe, w1_mgii*(1+z)-20, w1_mgii*wratio_mgii*(1+z)+20)
     poly = np.polyfit(wavelength_cut, flux_cut, 1)
-    line_poly = line((poly[1], poly[0]), wavelength)
+    line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe
     spe_new.data = flux/line_poly
+    #plt.figure()
+    #plt.plot(wavelength, spe.data)
+    #plt.plot(wavelength, line_poly)
+    #plt.show()
     return spe_new
 
 
@@ -154,6 +158,10 @@ def fit_doublet(spe, z, how='abs', fwhm=None):
     A_2 = abs(max(flux) - min(flux))
     mu = w1*(1+z)
     # print line_prior[0]
+    if fwhm != None:
+        sigma_1 = 2.7
+        sigma_2 = 2.7
+        parameters = A_1, A_2, mu, sigma_1, sigma_2
     parameters = A_1, A_2, mu
     # make fits
     v, covar, info, mesg, success = leastsq(function, parameters,
@@ -161,8 +169,8 @@ def fit_doublet(spe, z, how='abs', fwhm=None):
                                             full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     # calculate fluxes
-    flux_1_fit = A_1_fit*sigma
-    flux_2_fit = A_2_fit*sigma
+    flux_1_fit = A_1_fit*sigma_fixed
+    flux_2_fit = A_2_fit*sigma_fixed
     # calculate errors
     chisq = sum(info["fvec"] * info["fvec"])
     dof = len(info["fvec"]) - len(v)
@@ -204,7 +212,7 @@ def flux(A, err_A, sigma=sigma_fixed):
     """
     """
     flux = A*sigma*np.sqrt(2*np.pi)
-    err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)
+    err_flux = A*sigma*((err_A/A)**2+(err_sigma_fixed/sigma_fixed)
                         ** 2)**0.5*np.sqrt(2*np.pi)
     return flux, err_flux
 
