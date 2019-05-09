@@ -109,8 +109,8 @@ def double_model(parameters, x):
         A1, A2, mu = parameters
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
     else:
-        A1, A2, mu, sigma = parameters
-        return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2, sigma), x)
+        A1, A2, mu, sigma_1, sigma_2 = parameters
+        return 1-gaussian((mu, A1, sigma_1), x)-gaussian((mu*wratio_mgii, A2, sigma_2), x)
 
 
 w1_oii = 3727.092
@@ -124,8 +124,8 @@ def double_model_em(parameters, x):
         A1, A2, mu = parameters
         return 1+gaussian((mu, A1), x)+gaussian((mu*wratio_mgii, A2), x)
     else:
-        A1, A2, mu, sigma = parameters
-        return 1+gaussian((mu, A1, sigma), x)+gaussian((mu*wratio_mgii, A2, sigma), x)
+        A1, A2, mu, sigma_1, sigma_2 = parameters
+        return 1+gaussian((mu, A1, sigma_1), x)+gaussian((mu*wratio_mgii, A2, sigma_2), x)
 
 
 def chi_cuadrado_abs(parameters, x, y):
@@ -140,7 +140,7 @@ def chi_cuadrado_em(parameters, x, y):
     return y-double_model_em(parameters, x)
 
 
-def fit_doublet(spe, z, how='abs', fwhm=None):
+def fit_doublet(spe, z, how='abs', fwhm=2.7):
     """
     how: 'abs' for absorption
          'em' for emission
@@ -162,19 +162,24 @@ def fit_doublet(spe, z, how='abs', fwhm=None):
     A_2 = abs(max(flux) - min(flux))
     mu = w1*(1+z)
     # print line_prior[0]
-    if fwhm != None:
-        sigma_1 = 2.7
-        sigma_2 = 2.7
+    if fwhm != 2.7:
+        sigma_1 = fwhm/(2*np.sqrt(2*np.log(2)))
+        sigma_2 = fwhm/(2*np.sqrt(2*np.log(2)))
         parameters = A_1, A_2, mu, sigma_1, sigma_2
-    parameters = A_1, A_2, mu
+    else:
+        parameters = A_1, A_2, mu
+        sigma_1 = sigma_fixed
+        sigma_2 = sigma_fixed
     # make fits
     v, covar, info, mesg, success = leastsq(function, parameters,
                                             args=(wavelength, flux),
                                             full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
-    # calculate fluxes
-    flux_1_fit = A_1_fit*sigma_fixed
-    flux_2_fit = A_2_fit*sigma_fixed
+    if fhmw != 2.7:
+        sigma_1_fit, sigma_2_fit = v[3], v[4]
+        fitted_parameters = [A_1_fit, A_2_fit, mu_fit, sigma_1_fit, sigma_2_fit]
+    else:
+        fitted_parameters = [A_1_fit, A_2_fit, mu_fit]
     # calculate errors
     chisq = sum(info["fvec"] * info["fvec"])
     dof = len(info["fvec"]) - len(v)
@@ -187,11 +192,23 @@ def fit_doublet(spe, z, how='abs', fwhm=None):
         err_A_1 = err[0]
         err_A_2 = err[1]
         err_mu = err[2]
+        if fwhm != 2.7:
+            err_sigma_1 = err[3]
+            err_sigma_2 = err[4]
+            error_parameters = [err_A_1, err_A_2, err_mu, err_sigma_1, err_sigma_2]
+        else:
+            error_parameters = [err_A_1, err_A_2, err_mu]
     else:
         err_A_1 = np.NAN
         err_A_2 = np.NAN
         err_mu = np.NAN
-    return A_1_fit, err_A_1, A_2_fit, err_A_2, mu_fit, err_mu, flux_1_fit, flux_2_fit
+        if fwhm != 2.7:
+            err_sigma_1 = np.NAN
+            err_sigma_2 = np.NAN
+            error_parameters = [err_A_1, err_A_2, err_mu, err_sigma_1, err_sigma_2]
+        else:
+            error_parameters = [err_A_1, err_A_2, err_mu]
+    return fitted_parameters, error_parameters
 
 
 def fit_line(spe, w1):
