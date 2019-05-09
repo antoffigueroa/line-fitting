@@ -175,7 +175,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
                                             args=(wavelength, flux),
                                             full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
-    if fhmw != 2.7:
+    if fwhm != 2.7:
         sigma_1_fit, sigma_2_fit = v[3], v[4]
         fitted_parameters = [A_1_fit, A_2_fit, mu_fit, sigma_1_fit, sigma_2_fit]
     else:
@@ -195,9 +195,6 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         if fwhm != 2.7:
             err_sigma_1 = err[3]
             err_sigma_2 = err[4]
-            error_parameters = [err_A_1, err_A_2, err_mu, err_sigma_1, err_sigma_2]
-        else:
-            error_parameters = [err_A_1, err_A_2, err_mu]
     else:
         err_A_1 = np.NAN
         err_A_2 = np.NAN
@@ -205,9 +202,10 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         if fwhm != 2.7:
             err_sigma_1 = np.NAN
             err_sigma_2 = np.NAN
-            error_parameters = [err_A_1, err_A_2, err_mu, err_sigma_1, err_sigma_2]
-        else:
-            error_parameters = [err_A_1, err_A_2, err_mu]
+    if fwhm != 2.7:
+        error_parameters = [err_A_1, err_A_2, err_mu, err_sigma_1, err_sigma_2]
+    else:
+        error_parameters = [err_A_1, err_A_2, err_mu]
     return fitted_parameters, error_parameters
 
 
@@ -229,11 +227,11 @@ def fit_line(spe, w1):
     return mu_fit, A_fit, flux_fit, n_fit, m_fit
 
 
-def flux(A, err_A, sigma=sigma_fixed):
+def flux(A, err_A, sigma=sigma_fixed, err_sigma = err_sigma_fixed):
     """
     """
     flux = A*sigma*np.sqrt(2*np.pi)
-    err_flux = A*sigma*((err_A/A)**2+(err_sigma_fixed/sigma_fixed)
+    err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)
                         ** 2)**0.5*np.sqrt(2*np.pi)
     return flux, err_flux
 
