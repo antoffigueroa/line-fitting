@@ -54,7 +54,7 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     return spe
 
 
-def normalize_poly(spe, z):
+def normalize_poly(spe, z, show = False):
     """
     """
     flux = spe.data
@@ -65,6 +65,10 @@ def normalize_poly(spe, z):
     line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe
     spe_new.data = flux/line_poly
+    if show:
+        plt.figure()
+        plt.plot(wavelength, spe_new.data)
+        plt.show()
     return spe_new
 
 
@@ -162,14 +166,12 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     A_2 = abs(max(flux) - min(flux))
     mu = w1*(1+z)
     # print line_prior[0]
+    sigma_1 = sigma_fixed
+    sigma_2 = sigma_fixed
     if fwhm != 2.7:
-        sigma_1 = fwhm/(2*np.sqrt(2*np.log(2)))
-        sigma_2 = fwhm/(2*np.sqrt(2*np.log(2)))
         parameters = A_1, A_2, mu, sigma_1, sigma_2
     else:
         parameters = A_1, A_2, mu
-        sigma_1 = sigma_fixed
-        sigma_2 = sigma_fixed
     # make fits
     v, covar, info, mesg, success = leastsq(function, parameters,
                                             args=(wavelength, flux),
