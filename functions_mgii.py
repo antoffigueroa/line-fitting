@@ -108,6 +108,9 @@ def simple_model(parameters, x):
     mu, A, m, n = parameters
     return 1-gaussian((mu, A), x)
 
+def chi_cuadrado_s(parameters, x, y):
+    return y-simple_model(parameters, x)
+
 
 w1_mgii = 2796.352
 wratio_mgii = 1.0025672375
@@ -229,10 +232,8 @@ def fit_gaussian(spe, w1):
     sigma = np.std(flux)
     parameters = mu, A, sigma
     # make fits
-    fit_gaussiano = leastsq(chi_cuadrado, parametros, args=(wavelength, flux))
-    mu_fit, A_fit, n_fit, m = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2], fit_gaussiano[0][3]
-    # calculate flux
-    flux_fit = A_fit*sigma
+    fit_gaussiano = leastsq(chi_cuadrado_s, parametros, args=(wavelength, flux),full_output=1,  maxfev=100000)
+    mu_fit, A_fit, sigma_fit = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2]
     return mu_fit, A_fit, sigma_fit
 
 
