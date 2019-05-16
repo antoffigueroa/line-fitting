@@ -31,11 +31,11 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     if wratio is None:
         wratio_new = 1
     else:
-        wratio_new = wratio*(1+z)
-    r1 = np.int(spe.wave.pixel(w_0+10*wratio_new))
-    r2 = np.int(spe.wave.pixel(w_0+10*wratio_new+20))
-    l1 = np.int(spe.wave.pixel(w_0-10*wratio_new-20))
-    l2 = np.int(spe.wave.pixel(w_0-10*wratio_new))
+        wratio_new = wratio
+    r1 = np.int(spe.wave.pixel(w_0+20*wratio_new))
+    r2 = np.int(spe.wave.pixel(w_0+20*wratio_new+20))
+    l1 = np.int(spe.wave.pixel(w_0-20*wratio_new-20))
+    l2 = np.int(spe.wave.pixel(w_0-20*wratio_new))
     flux = spe.data
     right_part = flux[r1:r2]
     left_part = flux[l1:l2]
@@ -46,17 +46,21 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     if show:
         plt.figure()
         plt.plot(spe.wave.coord(), spe.data)
-        plt.plot(w_0+10*wratio, 1, '>')
-        plt.plot(w_0+10*wratio+20, 1, '<')
-        plt.plot(w_0-10*wratio-20, 1, '>')
-        plt.plot(w_0-10*wratio, 1, '<')
+        plt.plot(w_0+20*wratio, 1, '>')
+        plt.plot(w_0+20*wratio+20, 1, '<')
+        plt.plot(w_0-20*wratio-20, 1, '>')
+        plt.plot(w_0-20*wratio, 1, '<')
         plt.show()
     return spe
 
 
-def normalize_poly(spe, z, show = False):
+def normalize_poly(spe, z, wratio=None, show=False):
     """
     """
+    if wratio is None:
+        wratio_new = 1
+    else:
+        wratio_new = wratio
     flux = spe.data
     wavelength = spe.wave.coord()
     flux_cut, wavelength_cut = cut_spectra(
@@ -64,10 +68,13 @@ def normalize_poly(spe, z, show = False):
     poly = np.polyfit(wavelength_cut, flux_cut, 1)
     line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe
-    spe_new.data = flux/line_poly
+    #spe_new.data = flux/line_poly
     if show:
         plt.figure()
-        plt.plot(wavelength, spe_new.data)
+        plt.plot(wavelength, spe.data)
+        plt.plot(wavelength, line_poly)
+        plt.plot(w1_mgii*(1+z)-20, 1, '>')
+        plt.plot(w1_mgii*wratio_mgii*(1+z)+20, 1, '<')
         plt.show()
     return spe_new
 
