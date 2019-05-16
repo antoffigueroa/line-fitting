@@ -54,7 +54,7 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     return spe
 
 
-def normalize_poly(spe, z, wratio=None, show=False):
+def normalize_poly(spe, w_0, z, wratio=None, show=False):
     """
     """
     if wratio is None:
@@ -63,18 +63,21 @@ def normalize_poly(spe, z, wratio=None, show=False):
         wratio_new = wratio
     flux = spe.data
     wavelength = spe.wave.coord()
-    flux_cut, wavelength_cut = cut_spectra(
-        spe, w1_mgii*(1+z)-20, w1_mgii*wratio_mgii*(1+z)+20)
+    flux_cut_1, wavelength_cut_1 = cut_spectra(
+        spe, w_0+20*wratio_new, w_0+20*wratio_new+20)
+    flux_cut_2, wavelength_cut_2 = cut_spectra(
+        spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
+    flux_cut=np.concatenate((flux_cut_1,flux_cut_2))
+    wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
     poly = np.polyfit(wavelength_cut, flux_cut, 1)
     line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe
-    #spe_new.data = flux/line_poly
+    spe_new.data = flux/line_poly
     if show:
         plt.figure()
-        plt.plot(wavelength, spe.data)
-        plt.plot(wavelength, line_poly)
-        plt.plot(w1_mgii*(1+z)-20, 1, '>')
-        plt.plot(w1_mgii*wratio_mgii*(1+z)+20, 1, '<')
+        plt.plot(velocity(wavelength), spe.data)
+        plt.plot(velocity(wavelength), line_poly)
+        plt.xlim(-1500,1500)
         plt.show()
     return spe_new
 
