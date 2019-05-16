@@ -62,7 +62,7 @@ def normalize_poly(spe, w_0, z, wratio=None, show=False):
         spe, w_0+20*wratio_new, w_0+20*wratio_new+20)
     flux_cut_2, wavelength_cut_2 = cut_spectra(
         spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
-    flux_cut=np.concatenate((flux_cut_1,flux_cut_2))
+    flux_cut = np.concatenate((flux_cut_1, flux_cut_2))
     wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
     poly = np.polyfit(wavelength_cut, flux_cut, 1)
     line_poly = poly[0]*wavelength + poly[1]
@@ -72,9 +72,11 @@ def normalize_poly(spe, w_0, z, wratio=None, show=False):
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
         plt.plot(velocity(wavelength, z), line_poly, label='Fitted continuum')
-        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z), facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
-        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0-20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
-        plt.xlim(-3000,3000)
+        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
+                    facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
+                                                                20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.xlim(-3000, 3000)
         plt.legend().draggable()
     return spe_new
 
@@ -107,6 +109,7 @@ def simple_model(parameters, x):
     """
     mu, A, m, n = parameters
     return 1-gaussian((mu, A), x)
+
 
 def chi_cuadrado_s(parameters, x, y):
     return y-simple_model(parameters, x)
@@ -189,7 +192,8 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
         sigma_1_fit, sigma_2_fit = v[3], v[4]
-        fitted_parameters = [A_1_fit, A_2_fit, mu_fit, sigma_1_fit, sigma_2_fit]
+        fitted_parameters = [A_1_fit, A_2_fit,
+                             mu_fit, sigma_1_fit, sigma_2_fit]
     else:
         fitted_parameters = [A_1_fit, A_2_fit, mu_fit]
     # calculate errors
@@ -232,12 +236,13 @@ def fit_gaussian(spe, w1):
     sigma = np.std(flux)
     parameters = mu, A, sigma
     # make fits
-    fit_gaussiano = leastsq(chi_cuadrado_s, parametros, args=(wavelength, flux),full_output=1,  maxfev=100000)
+    fit_gaussiano = leastsq(chi_cuadrado_s, parametros, args=(
+        wavelength, flux), full_output=1,  maxfev=100000)
     mu_fit, A_fit, sigma_fit = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2]
     return mu_fit, A_fit, sigma_fit
 
 
-def flux(A, err_A, sigma=sigma_fixed, err_sigma = err_sigma_fixed):
+def flux(A, err_A, sigma=sigma_fixed, err_sigma=err_sigma_fixed):
     """
     """
     flux = A*sigma*np.sqrt(2*np.pi)
