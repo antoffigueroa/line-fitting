@@ -41,10 +41,10 @@ def normalize(spe, w_0, z, wratio=None, show=False):
     if show:
         plt.figure()
         plt.plot(spe.wave.coord(), spe.data)
-        plt.plot(w_0+20*wratio, 1, '>')
-        plt.plot(w_0+20*wratio+20, 1, '<')
-        plt.plot(w_0-20*wratio-20, 1, '>')
-        plt.plot(w_0-20*wratio, 1, '<')
+        plt.plot(w_0+20*wratio_new, 1, '>')
+        plt.plot(w_0+20*wratio_new+20, 1, '<')
+        plt.plot(w_0-20*wratio_new-20, 1, '>')
+        plt.plot(w_0-20*wratio_new, 1, '<')
         plt.show()
     return spe
 
@@ -218,22 +218,22 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     return fitted_parameters, error_parameters
 
 
-def fit_line(spe, w1):
+def fit_gaussian(spe, w1):
     """
     """
     # cut the spectra
     flux, wavelength = cut_spectra(spe, w1-20, w1+20)
     # define priors
-    line = np.polyfit(wavelength, flux, 1)
     A = abs(max(flux) - min(flux))
     mu = np.mean(wavelength)
-    parameters = mu, A, line[1], line[0]
+    sigma = np.std(flux)
+    parameters = mu, A, sigma
     # make fits
     fit_gaussiano = leastsq(chi_cuadrado, parametros, args=(wavelength, flux))
     mu_fit, A_fit, n_fit, m = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2], fit_gaussiano[0][3]
     # calculate flux
     flux_fit = A_fit*sigma
-    return mu_fit, A_fit, flux_fit, n_fit, m_fit
+    return mu_fit, A_fit, sigma_fit
 
 
 def flux(A, err_A, sigma=sigma_fixed, err_sigma = err_sigma_fixed):
