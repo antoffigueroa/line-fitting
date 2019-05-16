@@ -16,7 +16,7 @@ def cut_spectra(spe, w_ini, w_fin):
     return cut_flux, cut_wavelength
 
 
-def normalize(spe, w_0, z, wratio=None, show=False):
+def normalize_constant(spe, w_0, z, wratio=None, show=False):
     """
     spe: Spectrum object from mpdaf
     w_0: wavelength of the line you are working with
@@ -68,6 +68,35 @@ def normalize_poly(spe, w_0, z, wratio=None, show=False):
     line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe.copy()
     spe_new.data = flux/line_poly
+    if show:
+        plt.figure()
+        plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
+        plt.plot(velocity(wavelength, z), line_poly, label='Fitted continuum')
+        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
+                    facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
+                                                                20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.xlim(-3000, 3000)
+        plt.legend().draggable()
+    return spe_new
+
+def normalize_gauss(spe, w_0, z, wratio=None, show=False):
+    if wratio is None:
+        wratio_new = 1
+    else:
+        wratio_new = wratio
+    flux = spe.data
+    wavelength = spe.wave.coord()
+    flux_cut_1, wavelength_cut_1 = cut_spectra(
+        spe, w_0+20*wratio_new, w_0+20*wratio_new+20)
+    flux_cut_2, wavelength_cut_2 = cut_spectra(
+        spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
+    flux_cut = np.concatenate((flux_cut_1, flux_cut_2))
+    wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
+    mu_fit, A_fit, sigma_fit = fit_gaussian(wavelength_cut, flux_cut)
+    gauss = gaussian((mu_fit, A_fit, sigma_fit), wavelength)
+    spe_new = spe.copy()
+    spe_new.data = flux/gauss
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
@@ -225,11 +254,9 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     return fitted_parameters, error_parameters
 
 
-def fit_gaussian(spe, w1):
+def fit_gaussian(wavelength, flux):
     """
     """
-    # cut the spectra
-    flux, wavelength = cut_spectra(spe, w1-20, w1+20)
     # define priors
     A = abs(max(flux) - min(flux))
     mu = np.mean(wavelength)
