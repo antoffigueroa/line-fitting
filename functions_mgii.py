@@ -101,14 +101,14 @@ def normalize_gauss(spe, w_0, z, wratio=None, show=False):
         spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
     flux_cut = np.concatenate((flux_cut_1, flux_cut_2))
     wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
-    mu_fit, A_fit, sigma_fit = fit_gaussian(wavelength_cut, flux_cut)
-    gauss = gaussian((mu_fit, A_fit, sigma_fit), wavelength)
+    mu_fit, A_fit, sigma_fit, m_fit, n_fit = fit_gaussian(wavelength_cut, flux_cut)
+    gauss = simple_model((mu_fit, A_fit, sigma_fit, m_fit, n_fit), wavelength)
     spe_new = spe.copy()
     spe_new.data = flux/gauss
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
-        plt.plot(velocity(wavelength, z), line_poly, label='Fitted continuum')
+        plt.plot(velocity(wavelength, z), gauss, label='Fitted continuum')
         plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
                     facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
         plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
@@ -144,11 +144,11 @@ def line(parameters, x):
 def simple_model(parameters, x):
     """
     """
-    mu, A, m, n = parameters
-    return 1-gaussian((mu, A), x)
+    mu, A, sigma, m, n = parameters
+    return gaussian((mu, A, sigma), x) + m*x + n
 
 
-def chi_cuadrado_s(parameters, x, y):
+def chi_cuadrado_g(parameters, x, y):
     return y-simple_model(parameters, x)
 
 
@@ -269,12 +269,14 @@ def fit_gaussian(wavelength, flux):
     A = abs(max(flux) - min(flux))
     mu = np.mean(wavelength)
     sigma = np.std(flux)
-    parameters = mu, A, sigma
+    m = 0
+    n = 1
+    parameters = mu, A, sigma, m, n
     # make fits
-    fit_gaussiano = leastsq(chi_cuadrado_s, parametros, args=(
+    fit_gaussiano = leastsq(chi_cuadrado_g, parameters, args=(
         wavelength, flux), full_output=1,  maxfev=100000)
-    mu_fit, A_fit, sigma_fit = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2]
-    return mu_fit, A_fit, sigma_fit
+    mu_fit, A_fit, sigma_fit, m_fit, n_fit = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2], fit_gaussiano[0][3], fit_gaussiano[0][4]
+    return mu_fit, A_fit, sigma_fit, m_fit, n_fit
 
 
 def flux(A, err_A, sigma=sigma_fixed, err_sigma=err_sigma_fixed):
