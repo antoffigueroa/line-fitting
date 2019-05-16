@@ -15,6 +15,14 @@ def cut_spectra(spe, w_ini, w_fin):
     cut_wavelength = wavelength[p1:p2]
     return cut_flux, cut_wavelength
 
+def normalize(how, spe, w_0, z, wratio=None, show=False):
+    if how == 'constant':
+        return normalize_constant(spe, w_0, z, wratio, show)
+    if how == 'line':
+        return normalize_poly(spe, w_0, z, wratio, show)
+    if how == 'gauss':
+        return normalize_gauss(spe, w_0, z, wratio, show)
+
 
 def normalize_constant(spe, w_0, z, wratio=None, show=False):
     """
