@@ -5,11 +5,6 @@ from scipy.optimize import bisect, leastsq
 import scipy.stats
 
 
-def create_mask():
-    """
-    """
-
-
 def cut_spectra(spe, w_ini, w_fin):
     spe_new = spe
     flux = spe_new.data
@@ -71,14 +66,16 @@ def normalize_poly(spe, w_0, z, wratio=None, show=False):
     wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
     poly = np.polyfit(wavelength_cut, flux_cut, 1)
     line_poly = poly[0]*wavelength + poly[1]
-    spe_new = spe
+    spe_new = spe.copy()
     spe_new.data = flux/line_poly
     if show:
         plt.figure()
-        plt.plot(velocity(wavelength), spe.data)
-        plt.plot(velocity(wavelength), line_poly)
-        plt.xlim(-1500,1500)
-        plt.show()
+        plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
+        plt.plot(velocity(wavelength, z), line_poly, label='Fitted continuum')
+        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z), facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0-20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.xlim(-3000,3000)
+        plt.legend().draggable()
     return spe_new
 
 
