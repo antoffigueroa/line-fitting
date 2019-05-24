@@ -15,13 +15,13 @@ def cut_spectra(spe, w_ini, w_fin):
     cut_wavelength = wavelength[p1:p2]
     return cut_flux, cut_wavelength
 
-def normalize(how, spe, w_0, z, wratio=None, show=False):
+def normalize(spe, w_0, z, how='constant', wratio=None, show=False):
     if how == 'constant':
         return normalize_constant(spe, w_0, z, wratio, show)
     if how == 'line':
-        return normalize_poly(spe, w_0, z, wratio, show)
-    if how == 'gauss':
-        return normalize_gauss(spe, w_0, z, wratio, show)
+        return normalize_line(spe, w_0, z, wratio, show)
+    if how == 'parabole':
+        return normalize_parabole(spe, w_0, z, wratio, show)
 
 
 def normalize_constant(spe, w_0, z, wratio=None, show=False):
@@ -40,24 +40,28 @@ def normalize_constant(spe, w_0, z, wratio=None, show=False):
     l1 = np.int(spe.wave.pixel(w_0-20*wratio_new-20))
     l2 = np.int(spe.wave.pixel(w_0-20*wratio_new))
     flux = spe.data
+    wavelength = spe.wave.coord()
     right_part = flux[r1:r2]
     left_part = flux[l1:l2]
     mean_right = np.mean(right_part)
     mean_left = np.mean(left_part)
     mean = (mean_right+mean_left)/2.0
-    spe.data = spe.data/mean
+    spe_new = spe.copy()
+    spe_new.data = spe_new.data/mean
     if show:
         plt.figure()
-        plt.plot(spe.wave.coord(), spe.data)
-        plt.plot(w_0+20*wratio_new, 1, '>')
-        plt.plot(w_0+20*wratio_new+20, 1, '<')
-        plt.plot(w_0-20*wratio_new-20, 1, '>')
-        plt.plot(w_0-20*wratio_new, 1, '<')
-        plt.show()
-    return spe
+        plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
+        plt.plot(velocity(wavelength, z), line((0, mean), wavelength), label='Fitted continuum')
+        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
+                    facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
+                                                                20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.xlim(-3000, 3000)
+        plt.legend().draggable()
+    return spe_new
 
 
-def normalize_poly(spe, w_0, z, wratio=None, show=False):
+def normalize_line(spe, w_0, z, wratio=None, show=False):
     """
     """
     if wratio is None:
@@ -88,7 +92,7 @@ def normalize_poly(spe, w_0, z, wratio=None, show=False):
         plt.legend().draggable()
     return spe_new
 
-def normalize_gauss(spe, w_0, z, wratio=None, show=False):
+def normalize_parabole(spe, w_0, z, wratio=None, show=False):
     if wratio is None:
         wratio_new = 1
     else:
@@ -101,14 +105,14 @@ def normalize_gauss(spe, w_0, z, wratio=None, show=False):
         spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
     flux_cut = np.concatenate((flux_cut_1, flux_cut_2))
     wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
-    mu_fit, A_fit, sigma_fit, m_fit, n_fit = fit_gaussian(wavelength_cut, flux_cut)
-    gauss = simple_model((mu_fit, A_fit, sigma_fit, m_fit, n_fit), wavelength)
+    poly = np.polyfit(wavelength_cut, flux_cut, 2)
+    parabole = poly[0]*wavelength**2 + poly[1]*wavelength + poly[2]
     spe_new = spe.copy()
-    spe_new.data = flux/gauss
+    spe_new.data = flux/parabole
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
-        plt.plot(velocity(wavelength, z), gauss, label='Fitted continuum')
+        plt.plot(velocity(wavelength, z), parabole, label='Fitted continuum')
         plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
                     facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
         plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
