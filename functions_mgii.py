@@ -336,3 +336,16 @@ def scale_pixel(scale, distance):
     """
     kpc = scale * distance
     return kpc
+
+def copy_header(headered_file, unheadered_file):
+    """
+    Copies the header of one cube and the data of another cube and creates a new
+    cube with the header and the data
+    """
+    fits_header = fits.open(headered_file)
+    w = wcs.WCS(fits_header[1].header)
+    header = w.to_header()
+    fits_datos = fits.open(unheadered_file)
+    data = fits_datos[0].data
+    hdu = fits.PrimaryHDU(data, header=header)
+    return hdu
