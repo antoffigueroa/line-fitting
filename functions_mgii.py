@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mpdaf.obj import Spectrum
 from scipy.optimize import bisect, leastsq
 import scipy.stats
+from astropy.coordinates import SkyCoord
 
 
 def cut_spectra(spe, w_ini, w_fin):
@@ -314,19 +315,11 @@ def velocity(w_obs, z, how='abs'):
     return vel
 
 
-def def_zero(vel_matrix):
-    """
-    Recieves a velocity matrix and returns the position closer to 0
-    """
-    result = np.where(vel_matrix == np.nanmin(vel_matrix))
-    return (result[0][0], result[1][0])
-
-
-def calculate_distance(x1, y1, x2, y2, scale):
+def calculate_distance(c1, c2):
     """
     Recieves two point coordinates and calculates their distance
     """
-    distance = np.sqrt((x1-x2)**2+(y1-y2)**2)*scale
+    distance = c1.separation(c2)
     return distance
 
 
@@ -345,7 +338,9 @@ def copy_header(headered_file, unheadered_file):
     fits_header = fits.open(headered_file)
     w = wcs.WCS(fits_header[1].header)
     header = w.to_header()
+    fits_header.close()
     fits_datos = fits.open(unheadered_file)
     data = fits_datos[0].data
+    fits_datos.close()
     hdu = fits.PrimaryHDU(data, header=header)
     return hdu
