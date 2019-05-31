@@ -344,3 +344,16 @@ def copy_header(headered_file, unheadered_file):
     fits_datos.close()
     hdu = fits.PrimaryHDU(data, header=header)
     return hdu
+
+def copy_header_npy(headered_file, numpy_array):
+    """
+    Copies the header of one cube and the data of another cube and creates a new
+    cube with the header and the data
+    """
+    fits_header = fits.open(headered_file)
+    w = wcs.WCS(fits_header[1].header)
+    header = w.to_header()
+    fits_header.close()
+    data = numpy_array
+    hdu = fits.PrimaryHDU(data, header=header)
+    return hdu
