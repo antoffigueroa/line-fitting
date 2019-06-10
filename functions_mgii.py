@@ -4,6 +4,8 @@ from mpdaf.obj import Spectrum
 from scipy.optimize import bisect, leastsq
 import scipy.stats
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
+from astropy import wcs
 
 
 def cut_spectra(spe, w_ini, w_fin):
