@@ -6,6 +6,7 @@ import scipy.stats
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy import wcs
+from astropy import units as u
 
 
 def cut_spectra(spe, w_ini, w_fin):
