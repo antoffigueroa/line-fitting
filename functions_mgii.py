@@ -360,3 +360,13 @@ def copy_header_npy(headered_file, numpy_array):
     data = numpy_array
     hdu = fits.PrimaryHDU(data, header=header)
     return hdu
+
+def create_zeros_cube(original_cube):
+    """
+    Creates a cube filled with zeros with the same dimensions as the given cube
+    """
+
+def fill_cube(center, alpha, ):
+    """
+    Fills the cube
+    """
