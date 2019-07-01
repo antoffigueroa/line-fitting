@@ -365,6 +365,9 @@ def create_zeros_cube(original_cube):
     """
     Creates a cube filled with zeros with the same dimensions as the given cube
     """
+    shape = original_cube.shape
+    new_cube = np.zeros((shape[2], shape[1], shape[0]))
+    return new_cube
 
 def fill_cube(center, alpha, ):
     """
