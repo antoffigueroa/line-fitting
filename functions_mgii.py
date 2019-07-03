@@ -366,10 +366,23 @@ def create_zeros_cube(original_cube):
     Creates a cube filled with zeros with the same dimensions as the given cube
     """
     shape = original_cube.shape
-    new_cube = np.zeros((shape[2], shape[1], shape[0]))
+    new_cube = np.zeros((shape[0], shape[1], shape[2]))
     return new_cube
 
-def fill_cube(center, alpha, ):
+def line_point_slope(x1, y1, m, x):
+    y = m*(x-x1) + y1
+    return y
+
+def condition_biconic_flow(center, alpha, cube):
+    center_ra = center.ra
+    center_dec = center.dec
+    theta_1 = np.radians(90 - alpha)
+    theta_2 = np.radians(90 + alpha)
+    m_1 = np.tan(theta_1)
+    m_2 = np.tan(theta_2)
+    
+
+def biconic_outflow(center, alpha, cube):
     """
     Fills the cube
     """
