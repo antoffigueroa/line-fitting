@@ -369,6 +369,10 @@ def create_zeros_cube(original_cube):
     new_cube = np.zeros((shape[0], shape[1], shape[2]))
     return new_cube
 
+def add_noise(zeros_cube, var):
+    """
+    """
+
 def line_point_slope(x1, y1, m, x):
     y = m*(x-x1) + y1
     return y
@@ -391,5 +395,8 @@ def biconic_outflow(center, alpha, cube, header):
     """
     Fills the cube
     """
-    #recorre cada uno de los puntos del cubo
+    #recorre cada uno de los pixeles del cubo
     #transformamos pixeles a coordenadas
+    #vemos si el pixel cumple con la condicion
+    ##si la cumple, se le agrega un doblete grande
+    ##si no la cumple, se le agrega un doblete mas pequeno
