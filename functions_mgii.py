@@ -373,16 +373,23 @@ def line_point_slope(x1, y1, m, x):
     y = m*(x-x1) + y1
     return y
 
-def condition_biconic_flow(center, alpha, cube):
+def condition_biconic_flow(center, alpha, ra, dec):
     center_ra = center.ra
     center_dec = center.dec
     theta_1 = np.radians(90 - alpha)
     theta_2 = np.radians(90 + alpha)
     m_1 = np.tan(theta_1)
     m_2 = np.tan(theta_2)
-    
+    dec_line1 = line_point_slope(center_ra, center_dec, m_1, ra)
+    dec_line2 = line_point_slope(center_ra, center_dec, m_2, ra)
+    if (dec > dec_line2 and dec > dec_line1) or (dec < dec_line1 and dec < dec_line2):
+        return True
+    else:
+        return False
 
-def biconic_outflow(center, alpha, cube):
+def biconic_outflow(center, alpha, cube, header):
     """
     Fills the cube
     """
+    #recorre cada uno de los puntos del cubo
+    #transformamos pixeles a coordenadas
