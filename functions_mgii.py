@@ -401,17 +401,8 @@ def biconic_outflow(center, alpha, cube, header):
     ##si la cumple, se le agrega un doblete grande
     ##si no la cumple, se le agrega un doblete mas pequeno
 
-def calculate_sigma(spe, fwhm, w1, w2, z):
+def calculate_sigma(a_sn, fwhm, w1, w2, z):
     """
     """
-    c1 = spe.select_lambda(lbda_min=w1, lbda_max=w2, unit_wave=u.angstrom)
-    im_cont1 = c1.mean(axis=0)
-    aux = c1 - im_cont1
-    aux1 = aux*aux
-    var = aux1.mean(axis=0)  #continuum variances
-    im_cont1.var = var.data
-    aux3 = sqrt(var)
-    s_n = (im_cont1 / aux3 ) * 1e10
-    a_sn = s_n.data.data
     sigma = fwhm/ a_sn / (1+z)
     return sigma
