@@ -406,3 +406,20 @@ def calculate_sigma(a_sn, fwhm, w1, w2, z):
     """
     sigma = fwhm/ a_sn / (1+z)
     return sigma
+
+def inverse_square(x):
+    inverse_square_x = 1/(x**2)
+    return inverse_square_x
+
+def weighted_mean(values, error, how=None):
+    weighted_sum = 0
+    sum_weights = 0
+    for i in range(len(values)):
+        if how == None:
+            weighted_sum += values[i]
+            sum_weights += 1
+        else:
+            weighted_sum += values[i]*how(error[i])
+            sum_weights += how(error[i])
+    mean = weighted_sum/sum_weights
+    return mean
