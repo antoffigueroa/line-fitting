@@ -370,7 +370,7 @@ def weighted_mean(values, error, how=None):
     mean = weighted_sum/sum_weights
     return mean
 
-def z2v(dv, z):
+def v2z(dv, z):
     dz = dv/c*(1+z)
     z_sys = z-dz
     return z_sys
