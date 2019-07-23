@@ -8,6 +8,7 @@ from astropy.io import fits
 from astropy import wcs
 from astropy import units as u
 
+c = 299792.458
 
 def cut_spectra(spe, w_ini, w_fin):
     spe_new = spe
@@ -279,7 +280,6 @@ def velocity(w_obs, z, how='abs'):
         w1 = w1_mgii
     elif how == 'emi':
         w1 = w1_oii
-    c = 299792.458
     z_obs = w_obs/w1 - 1
     vel = (z_obs-z)/(1+z)*c
     return vel
@@ -369,3 +369,8 @@ def weighted_mean(values, error, how=None):
             sum_weights += how(error[i])
     mean = weighted_sum/sum_weights
     return mean
+
+def z2v(dv, z):
+    dz = dv/c*(1+z)
+    z_sys = z-dz
+    return z_sys
