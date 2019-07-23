@@ -29,12 +29,6 @@ def normalize(spe, w_0, z, how='constant', wratio=None, show=False):
 
 
 def normalize_constant(spe, w_0, z, wratio=None, show=False):
-    """
-    spe: Spectrum object from mpdaf
-    w_0: wavelength of the line you are working with
-    wratio: only used if you know there is another line close to the line you
-    are working with
-    """
     if wratio is None:
         wratio_new = 1
     else:
@@ -66,8 +60,6 @@ def normalize_constant(spe, w_0, z, wratio=None, show=False):
 
 
 def normalize_line(spe, w_0, z, wratio=None, show=False):
-    """
-    """
     if wratio is None:
         wratio_new = 1
     else:
@@ -131,8 +123,6 @@ err_sigma_fixed = 0
 
 
 def gaussian(parameters, x):
-    """
-    """
     if len(parameters) == 2:
         mu, A = parameters
         sigma = sigma_fixed
@@ -150,8 +140,6 @@ def line(parameters, x):
 
 
 def simple_model(parameters, x):
-    """
-    """
     mu, A, sigma, m, n = parameters
     return gaussian((mu, A, sigma), x) + m*x + n
 
@@ -165,8 +153,6 @@ wratio_mgii = 1.0025672375
 
 
 def double_model(parameters, x):
-    """
-    """
     if len(parameters) == 3:
         A1, A2, mu = parameters
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
@@ -180,8 +166,6 @@ wratio_oii = 3729.875/w1_oii
 
 
 def double_model_em(parameters, x):
-    """
-    """
     if len(parameters) == 3:
         A1, A2, mu = parameters
         return 1+gaussian((mu, A1), x)+gaussian((mu*wratio_mgii, A2), x)
@@ -191,22 +175,14 @@ def double_model_em(parameters, x):
 
 
 def chi_cuadrado_abs(parameters, x, y):
-    """
-    """
     return y-double_model(parameters, x)
 
 
 def chi_cuadrado_em(parameters, x, y):
-    """
-    """
     return y-double_model_em(parameters, x)
 
 
 def fit_doublet(spe, z, how='abs', fwhm=2.7):
-    """
-    how: 'abs' for absorption
-         'em' for emission
-    """
     if how == 'abs':
         w1 = w1_mgii
         wratio = wratio_mgii
@@ -271,8 +247,6 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
 
 
 def fit_gaussian(wavelength, flux):
-    """
-    """
     # define priors
     A = abs(max(flux) - min(flux))
     mu = np.mean(wavelength)
@@ -288,8 +262,6 @@ def fit_gaussian(wavelength, flux):
 
 
 def flux(A, err_A, sigma=sigma_fixed, err_sigma=err_sigma_fixed):
-    """
-    """
     flux = A*sigma*np.sqrt(2*np.pi)
     err_flux = A*sigma*((err_A/A)**2+(err_sigma/sigma)
                         ** 2)**0.5*np.sqrt(2*np.pi)
@@ -297,17 +269,12 @@ def flux(A, err_A, sigma=sigma_fixed, err_sigma=err_sigma_fixed):
 
 
 def eq_width(flux, err_flux, z):
-    """
-    takes flux and turns it into equivalent width
-    """
     ew = flux/(1+z)
     err_ew = err_flux/(1+z)
     return ew, err_ew
 
 
 def velocity(w_obs, z, how='abs'):
-    """
-    """
     if how == 'abs':
         w1 = w1_mgii
     elif how == 'emi':
@@ -319,25 +286,15 @@ def velocity(w_obs, z, how='abs'):
 
 
 def calculate_distance(c1, c2):
-    """
-    Recieves two point coordinates and calculates their distance
-    """
     distance = c1.separation(c2)
     return distance
 
 
 def scale_pixel(scale, distance):
-    """
-    turns pixel distances into kpc
-    """
     kpc = scale * distance
     return kpc
 
 def copy_header(headered_file, unheadered_file):
-    """
-    Copies the header of one cube and the data of another cube and creates a new
-    cube with the header and the data
-    """
     fits_header = fits.open(headered_file)
     w = wcs.WCS(fits_header[1].header)
     header = w.to_header()
@@ -349,10 +306,6 @@ def copy_header(headered_file, unheadered_file):
     return hdu
 
 def copy_header_npy(headered_file, numpy_array):
-    """
-    Copies the header of one cube and the data of another cube and creates a new
-    cube with the header and the data
-    """
     fits_header = fits.open(headered_file)
     w = wcs.WCS(fits_header[1].header)
     header = w.to_header()
@@ -362,16 +315,11 @@ def copy_header_npy(headered_file, numpy_array):
     return hdu
 
 def create_zeros_cube(original_cube):
-    """
-    Creates a cube filled with zeros with the same dimensions as the given cube
-    """
     shape = original_cube.shape
     new_cube = np.zeros((shape[0], shape[1], shape[2]))
     return new_cube
 
 def add_noise(zeros_cube, var):
-    """
-    """
 
 def line_point_slope(x1, y1, m, x):
     y = m*(x-x1) + y1
@@ -392,9 +340,6 @@ def condition_biconic_flow(center, alpha, ra, dec):
         return False
 
 def biconic_outflow(center, alpha, cube, header):
-    """
-    Fills the cube
-    """
     #recorre cada uno de los pixeles del cubo
     #transformamos pixeles a coordenadas
     #vemos si el pixel cumple con la condicion
@@ -402,8 +347,6 @@ def biconic_outflow(center, alpha, cube, header):
     ##si no la cumple, se le agrega un doblete mas pequeno
 
 def calculate_sigma(a_sn, fwhm, w1, w2, z):
-    """
-    """
     sigma = fwhm/ a_sn / (1+z)
     return sigma
 
