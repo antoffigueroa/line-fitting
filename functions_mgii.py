@@ -347,9 +347,10 @@ def biconic_outflow(center, alpha, cube, header):
     #vemos si el pixel cumple con la condicion
     ##si la cumple, se le agrega un doblete grande
     ##si no la cumple, se le agrega un doblete mas pequeno
+    return 0
 
 def calculate_sigma(a_sn, fwhm, w1, w2, z):
-    sigma = fwhm/ a_sn / (1+z)
+    sigma = fwhm / a_sn / (1+z)
     return sigma
 
 def inverse_square(x):
