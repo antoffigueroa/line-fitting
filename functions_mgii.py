@@ -230,17 +230,15 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         err_A_2 = err[1]
         err_mu = err[2]
         if fwhm != 2.7:
-            err_sigma_1 = err[3]
-            err_sigma_2 = err[4]
+            err_sigma = err[3]
     else:
         err_A_1 = np.NAN
         err_A_2 = np.NAN
         err_mu = np.NAN
         if fwhm != 2.7:
-            err_sigma_1 = np.NAN
-            err_sigma_2 = np.NAN
+            err_sigma = np.NAN
     if fwhm != 2.7:
-        error_parameters = [err_A_1, err_A_2, err_mu, err_sigma_1, err_sigma_2]
+        error_parameters = [err_A_1, err_A_2, err_mu, err_sigma]
     else:
         error_parameters = [err_A_1, err_A_2, err_mu]
     return fitted_parameters, error_parameters
