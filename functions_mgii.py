@@ -212,7 +212,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
                                             full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
-        sigma_fit = v[3], v[4]
+        sigma_fit = v[3]
         fitted_parameters = [A_1_fit, A_2_fit,
                              mu_fit, sigma_fit]
     else:
