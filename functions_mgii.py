@@ -360,7 +360,7 @@ def create_simple_table(array, units=False):
     for j in range(2, len(array)):
         for i in range(size):
             if i != size -1:
-                print array[j][i]+'&'
+                print array[j][i]+'&',
             else:
                 print array[j][i]+'\\\\'
     print '\\hline'
