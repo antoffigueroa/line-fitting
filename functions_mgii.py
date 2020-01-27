@@ -338,7 +338,7 @@ def v2z(dv, z):
     return z_sys
 
 def create_simple_table(array, units=False):
-    size = np.len(array[0])
+    size = len(array[0])
     print '\\begin{table}'
     print '\\caption{}'
     print '\\label{table:}'
