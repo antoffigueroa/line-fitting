@@ -336,3 +336,33 @@ def v2z(dv, z):
     dz = dv/c*(1+z)
     z_sys = z-dz
     return z_sys
+
+def create_simple_table(array, units=False):
+    size = np.len(array[0])
+    print '\\begin{table}'
+    print '\\caption{}'
+    print '\\label{table:}'
+    print '\\centering'
+    print '\\begin{tabular}{'+'c '*(size-1)+'c'+'}'
+    print '\\hline\\hline'
+    for i in range(size):
+        if i != size -1:
+            print array[0][i]+'&',
+        else:
+            print array[0][i]+'\\\\'
+    if units:
+        for i in range(size):
+            if i != size-1:
+                print array[1][i]+'&',
+            else:
+                print array[0][i]+'\\\\'
+    print '\\hline'
+    for j in range(2, len(array)):
+        for i in range(size):
+            if i != size -1:
+                print array[j][i]+'&'
+            else:
+                print array[j][i]+'\\\\'
+    print '\\hline'
+    print '\\end{tabular}'
+    print '\\end{table}'
