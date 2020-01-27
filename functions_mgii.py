@@ -349,20 +349,20 @@ def create_simple_table(array, units=False):
         if i != size -1:
             print array[0][i]+' &',
         else:
-            print array[0][i]+'\\\\'
+            print array[0][i]+' \\\\'
     if units:
         for i in range(size):
             if i != size-1:
                 print array[1][i]+' &',
             else:
-                print array[0][i]+'\\\\'
+                print array[0][i]+' \\\\'
     print '\\hline'
     for j in range(2, len(array)):
         for i in range(size):
             if i != size -1:
                 print array[j][i]+' &',
             else:
-                print array[j][i]+'\\\\'
+                print array[j][i]+' \\\\'
     print '\\hline'
     print '\\end{tabular}'
     print '\\end{table}'
