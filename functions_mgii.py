@@ -158,8 +158,8 @@ def double_model(parameters, x):
         A1, A2, mu = parameters
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
     else:
-        A1, A2, mu, sigma_1, sigma_2 = parameters
-        return 1-gaussian((mu, A1, sigma_1), x)-gaussian((mu*wratio_mgii, A2, sigma_2), x)
+        A1, A2, mu, sigma = parameters
+        return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2, sigma), x)
 
 
 w1_oii = 3727.092
@@ -201,10 +201,9 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     A_2 = abs(max(flux) - min(flux))
     mu = w1*(1+z)
     # print line_prior[0]
-    sigma_1 = sigma_fixed
-    sigma_2 = sigma_fixed
+    sigma = sigma_fixed
     if fwhm != 2.7:
-        parameters = A_1, A_2, mu, sigma_1, sigma_2
+        parameters = A_1, A_2, mu, sigma
     else:
         parameters = A_1, A_2, mu
     # make fits
@@ -213,9 +212,9 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
                                             full_output=1,  maxfev=100000)
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
-        sigma_1_fit, sigma_2_fit = v[3], v[4]
+        sigma_fit = v[3], v[4]
         fitted_parameters = [A_1_fit, A_2_fit,
-                             mu_fit, sigma_1_fit, sigma_2_fit]
+                             mu_fit, sigma_fit]
     else:
         fitted_parameters = [A_1_fit, A_2_fit, mu_fit]
     # calculate errors
