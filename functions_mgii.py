@@ -314,33 +314,6 @@ def copy_header_npy(headered_file, numpy_array):
     hdu = fits.PrimaryHDU(data, header=header)
     return hdu
 
-def create_zeros_cube(original_cube):
-    shape = original_cube.shape
-    new_cube = np.zeros((shape[0], shape[1], shape[2]))
-    return new_cube
-
-def add_noise(zeros_cube, var):
-    """
-    """
-
-def line_point_slope(x1, y1, m, x):
-    y = m*(x-x1) + y1
-    return y
-
-def condition_biconic_flow(center, alpha, ra, dec):
-    center_ra = center.ra
-    center_dec = center.dec
-    theta_1 = np.radians(90 - alpha)
-    theta_2 = np.radians(90 + alpha)
-    m_1 = np.tan(theta_1)
-    m_2 = np.tan(theta_2)
-    dec_line1 = line_point_slope(center_ra, center_dec, m_1, ra)
-    dec_line2 = line_point_slope(center_ra, center_dec, m_2, ra)
-    if (dec > dec_line2 and dec > dec_line1) or (dec < dec_line1 and dec < dec_line2):
-        return True
-    else:
-        return False
-
 def calculate_sigma(a_sn, fwhm, w1, w2, z):
     sigma = fwhm / a_sn / (1+z)
     return sigma
