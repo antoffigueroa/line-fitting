@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpdaf.obj import Spectrum
-from scipy.optimize import bisect, leastsq
+from scipy.optimize import bisect, leastsq, curve_fit
 import scipy.stats
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
@@ -204,12 +204,14 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     sigma = sigma_fixed
     if fwhm != 2.7:
         parameters = A_1, A_2, mu, sigma
+        min_bounds = [0, 0, z-0.001, 1]
+        max_bounds = [1, 1, z+0.001, 2]
     else:
         parameters = A_1, A_2, mu
+        min_bounds = [0, 0, z-0.001]
+        max_bounds = [1, 1, z+0.001]
     # make fits
-    v, covar, info, mesg, success = leastsq(function, parameters,
-                                            args=(wavelength, flux),
-                                            full_output=1,  maxfev=100000)
+    v, covar = curve_fit(function, wavelength, flux, p0=[parameters], bounds=(min_bounds,max_bounds))
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
         sigma_fit = v[3]
@@ -221,8 +223,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     chisq = sum(info["fvec"] * info["fvec"])
     dof = len(info["fvec"]) - len(v)
     if covar is not None:
-        err = np.array([np.sqrt(np.abs(covar[i, i])) *
-                        np.sqrt(np.abs(chisq / dof)) for i in range(len(v))])
+        err = np.sqrt(np.diag(covar))
     else:
         err = None
     if err is not None:
@@ -254,7 +255,7 @@ def fit_gaussian(wavelength, flux):
     parameters = mu, A, sigma, m, n
     # make fits
     fit_gaussiano = leastsq(chi_cuadrado_g, parameters, args=(
-        wavelength, flux), full_output=1,  maxfev=100000)
+        wavelength, flux),  max_nfev=100000)
     mu_fit, A_fit, sigma_fit, m_fit, n_fit = fit_gaussiano[0][0], fit_gaussiano[0][1], fit_gaussiano[0][2], fit_gaussiano[0][3], fit_gaussiano[0][4]
     return mu_fit, A_fit, sigma_fit, m_fit, n_fit
 
