@@ -220,8 +220,6 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     else:
         fitted_parameters = [A_1_fit, A_2_fit, mu_fit]
     # calculate errors
-    chisq = sum(info["fvec"] * info["fvec"])
-    dof = len(info["fvec"]) - len(v)
     if covar is not None:
         err = np.sqrt(np.diag(covar))
     else:
