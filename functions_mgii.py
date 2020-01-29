@@ -153,7 +153,7 @@ w1_mgii = 2796.352
 wratio_mgii = 1.0025672375
 
 
-def double_model(parameters, x):
+def double_model(*parameters, x):
     if len(parameters) == 3:
         A1, A2, mu = parameters
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
