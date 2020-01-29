@@ -187,11 +187,11 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     if how == 'abs':
         w1 = w1_mgii
         wratio = wratio_mgii
-        function = chi_cuadrado_abs
+        function = double_model
     elif how == 'em':
         w1 = w1_oii
         wratio = wratio_oii
-        function = chi_cuadrado_em
+        function = double_model_em
     # cut the spectra
     flux, wavelength = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
     # print flux
