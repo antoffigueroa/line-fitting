@@ -203,7 +203,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
     # print line_prior[0]
     sigma = sigma_fixed
     if fwhm != 2.7:
-        parameters = [A_1, A_2, mu, sigma]
+        parameters = A_1, A_2, mu, sigma
         min_bounds = [0, 0, w1*(1+z-0.001), 1]
         max_bounds = [1, 1, w1*(1+z+0.001), 2]
     else:
