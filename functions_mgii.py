@@ -10,6 +10,7 @@ from astropy import units as u
 
 c = 299792.458
 
+
 def cut_spectra(spe, w_ini, w_fin):
     spe_new = spe
     flux = spe_new.data
@@ -21,6 +22,7 @@ def cut_spectra(spe, w_ini, w_fin):
     cut_wavelength = wavelength[p1:p2]
     cut_var = var[p1:p2]
     return cut_flux, cut_wavelength, cut_var
+
 
 def normalize(spe, w_0, z, how='constant', wratio=None, show=False):
     if how == 'constant':
@@ -52,11 +54,14 @@ def normalize_constant(spe, w_0, z, wratio=None, show=False):
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
-        plt.plot(velocity(wavelength, z), line((0, mean), wavelength), label='Fitted continuum')
-        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
-                    facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
-        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
-                                                                20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.plot(velocity(wavelength, z), line((0, mean), wavelength),
+                 label='Fitted continuum')
+        plt.axvspan(velocity(w_0+20*wratio_new, z),
+                    velocity(w_0+20*wratio_new+20, z), facecolor='#2ca02c',
+                    alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z),
+                    velocity(w_0 - 20*wratio_new, z), facecolor='#2ca02c',
+                    alpha=0.5)
         plt.xlim(-3000, 3000)
         plt.legend().draggable()
     return spe_new
@@ -83,13 +88,16 @@ def normalize_line(spe, w_0, z, wratio=None, show=False):
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
         plt.plot(velocity(wavelength, z), line_poly, label='Fitted continuum')
-        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
-                    facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
-        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
-                                                                20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.axvspan(velocity(w_0+20*wratio_new, z),
+                    velocity(w_0+20*wratio_new+20, z), facecolor='#2ca02c',
+                    alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z),
+                    velocity(w_0 - 20*wratio_new, z), facecolor='#2ca02c',
+                    alpha=0.5)
         plt.xlim(-3000, 3000)
         plt.legend().draggable()
     return spe_new
+
 
 def normalize_parabole(spe, w_0, z, wratio=None, show=False):
     if wratio is None:
@@ -112,10 +120,12 @@ def normalize_parabole(spe, w_0, z, wratio=None, show=False):
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
         plt.plot(velocity(wavelength, z), parabole, label='Fitted continuum')
-        plt.axvspan(velocity(w_0+20*wratio_new, z), velocity(w_0+20*wratio_new+20, z),
-                    facecolor='#2ca02c', alpha=0.5, label='Window used to fit continuum')
-        plt.axvspan(velocity(w_0-20*wratio_new-20, z), velocity(w_0 -
-                                                                20*wratio_new, z), facecolor='#2ca02c', alpha=0.5)
+        plt.axvspan(velocity(w_0+20*wratio_new, z),
+                    velocity(w_0+20*wratio_new+20, z), facecolor='#2ca02c',
+                    alpha=0.5, label='Window used to fit continuum')
+        plt.axvspan(velocity(w_0-20*wratio_new-20, z),
+                    velocity(w_0 - 20*wratio_new, z), facecolor='#2ca02c',
+                    alpha=0.5)
         plt.xlim(-3000, 3000)
         plt.legend().draggable()
     return spe_new
@@ -161,7 +171,8 @@ def double_model(x, *parameters):
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
     else:
         A1, A2, mu, sigma = parameters
-        return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2, sigma), x)
+        return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2,
+                                                        sigma), x)
 
 
 w1_oii = 3727.092
@@ -174,7 +185,8 @@ def double_model_em(x, *parameters):
         return 1+gaussian((mu, A1), x)+gaussian((mu*wratio_mgii, A2), x)
     else:
         A1, A2, mu, sigma = parameters
-        return 1+gaussian((mu, A1, sigma), x)+gaussian((mu*wratio_mgii, A2, sigma), x)
+        return 1+gaussian((mu, A1, sigma), x)+gaussian((mu*wratio_mgii, A2,
+                                                        sigma), x)
 
 
 def chi_cuadrado_abs(parameters, x, y):
@@ -213,7 +225,8 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         min_bounds = [0, 0, w1*(1+z-0.001)]
         max_bounds = [1, 1, w1*(1+z+0.001)]
     # make fits
-    v, covar = curve_fit(function, wavelength, flux, p0=parameters, bounds=(min_bounds,max_bounds))
+    v, covar = curve_fit(function, wavelength, flux, p0=parameters,
+                         bounds=(min_bounds, max_bounds))
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
         sigma_fit = v[3]
@@ -292,6 +305,7 @@ def scale_pixel(scale, distance):
     kpc = scale * distance
     return kpc
 
+
 def copy_header(headered_file, unheadered_file):
     fits_header = fits.open(headered_file)
     w = wcs.WCS(fits_header[1].header)
@@ -303,6 +317,7 @@ def copy_header(headered_file, unheadered_file):
     hdu = fits.PrimaryHDU(data, header=header)
     return hdu
 
+
 def copy_header_npy(headered_file, numpy_array):
     fits_header = fits.open(headered_file)
     w = wcs.WCS(fits_header[1].header)
@@ -312,19 +327,22 @@ def copy_header_npy(headered_file, numpy_array):
     hdu = fits.PrimaryHDU(data, header=header)
     return hdu
 
+
 def calculate_sigma(a_sn, fwhm, w1, w2, z):
     sigma = fwhm / a_sn / (1+z)
     return sigma
+
 
 def inverse_square(x):
     inverse_square_x = 1/(x**2)
     return inverse_square_x
 
+
 def weighted_mean(values, error, how=None):
     weighted_sum = 0
     sum_weights = 0
     for i in range(len(values)):
-        if how == None:
+        if how is None:
             weighted_sum += values[i]
             sum_weights += 1
         else:
@@ -333,10 +351,12 @@ def weighted_mean(values, error, how=None):
     mean = weighted_sum/sum_weights
     return mean
 
+
 def v2z(dv, z):
     dz = dv/c*(1+z)
     z_sys = z-dz
     return z_sys
+
 
 def create_simple_table(array, units=False):
     size = len(array[0])
@@ -347,20 +367,20 @@ def create_simple_table(array, units=False):
     print '\\begin{tabular}{'+'c '*(size-1)+'c'+'}'
     print '\\hline\\hline'
     for i in range(size):
-        if i != size -1:
+        if i != size - 1:
             print array[0][i]+' &',
         else:
             print array[0][i]+' \\\\'
     if units:
         for i in range(size):
-            if i != size-1:
+            if i != size - 1:
                 print array[1][i]+' &',
             else:
                 print array[0][i]+' \\\\'
     print '\\hline'
     for j in range(2, len(array)):
         for i in range(size):
-            if i != size -1:
+            if i != size - 1:
                 print array[j][i]+' &',
             else:
                 print array[j][i]+' \\\\'
