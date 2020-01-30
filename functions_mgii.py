@@ -158,7 +158,7 @@ def double_model(x, *parameters):
         A1, A2, mu = parameters[0], parameters[1], parameters[2]
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
     else:
-        A1, A2, mu, sigma = parameters[0], parameters[1], parameters[2], parameters[3]
+        A1, A2, mu, sigma = parameters
         return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2, sigma), x)
 
 
@@ -171,8 +171,8 @@ def double_model_em(parameters, x):
         A1, A2, mu = parameters
         return 1+gaussian((mu, A1), x)+gaussian((mu*wratio_mgii, A2), x)
     else:
-        A1, A2, mu, sigma_1, sigma_2 = parameters
-        return 1+gaussian((mu, A1, sigma_1), x)+gaussian((mu*wratio_mgii, A2, sigma_2), x)
+        A1, A2, mu, sigma = parameters
+        return 1+gaussian((mu, A1, sigma), x)+gaussian((mu*wratio_mgii, A2, sigma), x)
 
 
 def chi_cuadrado_abs(parameters, x, y):
@@ -211,7 +211,6 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         min_bounds = [0, 0, w1*(1+z-0.001)]
         max_bounds = [1, 1, w1*(1+z+0.001)]
     # make fits
-    print parameters
     v, covar = curve_fit(function, wavelength, flux, p0=parameters, bounds=(min_bounds,max_bounds))
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
