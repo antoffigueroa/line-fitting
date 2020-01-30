@@ -85,6 +85,7 @@ def normalize_line(spe, w_0, z, wratio=None, show=False):
     line_poly = poly[0]*wavelength + poly[1]
     spe_new = spe.copy()
     spe_new.data = flux/line_poly
+    spe_new.var.data = spe_new.var.data/line_poly**2
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
