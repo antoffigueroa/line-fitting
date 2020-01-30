@@ -158,7 +158,7 @@ def double_model(x, *parameters):
         A1, A2, mu = parameters[0], parameters[1], parameters[2]
         return 1-gaussian((mu, A1), x)-gaussian((mu*wratio_mgii, A2), x)
     else:
-        A1, A2, mu, sigma = parameters
+        A1, A2, mu, sigma = parameters[0], parameters[1], parameters[2], parameters[3]
         return 1-gaussian((mu, A1, sigma), x)-gaussian((mu*wratio_mgii, A2, sigma), x)
 
 
