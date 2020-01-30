@@ -226,7 +226,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         min_bounds = [0, 0, w1*(1+z-0.001)]
         max_bounds = [1, 1, w1*(1+z+0.001)]
     # make fits
-    v, covar = curve_fit(function, wavelength, flux, p0=parameters, sigma=sigma_spe, absolute_sigma=True
+    v, covar = curve_fit(function, wavelength, flux, p0=parameters, sigma=sigma_spe, absolute_sigma=True,
                          bounds=(min_bounds, max_bounds))
     A_1_fit, A_2_fit, mu_fit = v[0], v[1], v[2]
     if fwhm != 2.7:
