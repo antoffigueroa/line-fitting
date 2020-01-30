@@ -13,12 +13,14 @@ c = 299792.458
 def cut_spectra(spe, w_ini, w_fin):
     spe_new = spe
     flux = spe_new.data
+    var = spe.var.data
     wavelength = spe_new.wave.coord()
     p1 = np.int(spe_new.wave.pixel(w_ini))
     p2 = np.int(spe_new.wave.pixel(w_fin))
     cut_flux = flux[p1:p2]
     cut_wavelength = wavelength[p1:p2]
-    return cut_flux, cut_wavelength
+    cut_var = var[p1:p2]
+    return cut_flux, cut_wavelength, cut_var
 
 def normalize(spe, w_0, z, how='constant', wratio=None, show=False):
     if how == 'constant':
@@ -166,7 +168,7 @@ w1_oii = 3727.092
 wratio_oii = 3729.875/w1_oii
 
 
-def double_model_em(parameters, x):
+def double_model_em(x, *parameters):
     if len(parameters) == 3:
         A1, A2, mu = parameters
         return 1+gaussian((mu, A1), x)+gaussian((mu*wratio_mgii, A2), x)
@@ -207,7 +209,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         min_bounds = [0, 0, w1*(1+z-0.001), 1]
         max_bounds = [1, 1, w1*(1+z+0.001), 2]
     else:
-        parameters = [A_1, A_2, mu]
+        parameters = (A_1, A_2, mu)
         min_bounds = [0, 0, w1*(1+z-0.001)]
         max_bounds = [1, 1, w1*(1+z+0.001)]
     # make fits
