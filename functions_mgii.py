@@ -118,6 +118,7 @@ def normalize_parabole(spe, w_0, z, wratio=None, show=False):
     parabole = poly[0]*wavelength**2 + poly[1]*wavelength + poly[2]
     spe_new = spe.copy()
     spe_new.data = flux/parabole
+    spe_new.var.data = spe_new.var.data/parabole**2
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
