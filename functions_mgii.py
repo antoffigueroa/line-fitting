@@ -74,9 +74,9 @@ def normalize_line(spe, w_0, z, wratio=None, show=False):
         wratio_new = wratio
     flux = spe.data
     wavelength = spe.wave.coord()
-    flux_cut_1, wavelength_cut_1 = cut_spectra(
+    flux_cut_1, wavelength_cut_1, var_cut_1 = cut_spectra(
         spe, w_0+20*wratio_new, w_0+20*wratio_new+20)
-    flux_cut_2, wavelength_cut_2 = cut_spectra(
+    flux_cut_2, wavelength_cut_2, var_cut_2 = cut_spectra(
         spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
     flux_cut = np.concatenate((flux_cut_1, flux_cut_2))
     wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
@@ -106,9 +106,9 @@ def normalize_parabole(spe, w_0, z, wratio=None, show=False):
         wratio_new = wratio
     flux = spe.data
     wavelength = spe.wave.coord()
-    flux_cut_1, wavelength_cut_1 = cut_spectra(
+    flux_cut_1, wavelength_cut_1, var_cut_1 = cut_spectra(
         spe, w_0+20*wratio_new, w_0+20*wratio_new+20)
-    flux_cut_2, wavelength_cut_2 = cut_spectra(
+    flux_cut_2, wavelength_cut_2, var_cut_2 = cut_spectra(
         spe, w_0-20*wratio_new-20, w_0-20*wratio_new)
     flux_cut = np.concatenate((flux_cut_1, flux_cut_2))
     wavelength_cut = np.concatenate((wavelength_cut_1, wavelength_cut_2))
@@ -207,7 +207,7 @@ def fit_doublet(spe, z, how='abs', fwhm=2.7):
         wratio = wratio_oii
         function = double_model_em
     # cut the spectra
-    flux, wavelength = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
+    flux, wavelength, var = cut_spectra(spe, w1*(1+z)-20, w1*wratio*(1+z)+20)
     # print flux
     # print wavelength
     # define priors
