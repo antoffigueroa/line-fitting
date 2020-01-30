@@ -51,6 +51,7 @@ def normalize_constant(spe, w_0, z, wratio=None, show=False):
     mean = (mean_right+mean_left)/2.0
     spe_new = spe.copy()
     spe_new.data = spe_new.data/mean
+    spe_new.var.data = spe_new.var.data/mean**2
     if show:
         plt.figure()
         plt.plot(velocity(wavelength, z), spe.data, label='Spectrum')
